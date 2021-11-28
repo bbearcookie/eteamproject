@@ -1,0 +1,27 @@
+{{#section "title"}}
+  <title>multer 테스트</title>
+{{/section}}
+
+<main>
+  <form action="/test/multer" method="post" enctype="multipart/form-data">
+    <div class="w-50 form-floating">
+      <input type="text" name="text1" class="form-control" id="floatingInput" placeholder="인풋값1">
+      <label for="floatingInput">인풋값1</label>
+    </div>
+    <div class="w-50 form-floating">
+      <input type="text" name="text2" class="form-control" id="floatingInput" placeholder="인풋값2">
+      <label for="floatingInput">인풋값2</label>
+    </div>
+    <div class="mt-3">
+      <label for="formFile" class="form-label">파일 전송 테스트</label>
+      <input type="file" name="formFile" id="formFile" class="form-control">
+    </div>
+    <div class="w-50 form-floating mb-3">
+    </div>
+    <button class="w-50 btn btn-lg btn-primary mb-3" type="submit">전송</button>
+  </form>
+</main>
+
+{{#section "script"}}
+  <script src="/js/testScript.js"></script>
+{{/section}}

@@ -1,0 +1,35 @@
+{{#section "style"}}
+  <link href="/css/signin.css" rel="stylesheet">
+{{/section}}
+
+{{#section "title"}}
+  <title>회원가입 페이지</title>
+{{/section}}
+
+<main class="form-signin text-center">
+  <form action="/auth/signup" method="post">
+    <img class="mb-4" src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+    <h1 class="h3 mb-3 fw-normal">회원가입</h1>
+
+    {{#each alert.error}}
+      <div class="alert alert-danger">
+        {{this}}
+      </div>
+    {{/each}}
+
+    <div class="form-floating">
+      <input type="username" name="username" class="form-control" id="floatingInput" placeholder="아이디">
+      <label for="floatingInput">아이디</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="비밀번호">
+      <label for="floatingPassword">비밀번호</label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary mb-3" type="submit">회원가입</button>
+    <a class="w-100 btn btn-lg btn-primary" href="/auth/login">뒤로가기</a>
+    <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
+  </form>
+</main>
+
+{{#section "script"}}
+{{/section}}
