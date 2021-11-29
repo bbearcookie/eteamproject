@@ -48,11 +48,9 @@ module.exports.recommendDietList = async function (dietSeCode) {
         diet = await Diet.exists({cntntsNo: result.cntntsNo});
         if (!diet) {
           let diet = new Diet({
-            dietSeCode: result.dietSeCode,
             cntntsNo: result.cntntsNo,
+            dietSeCode: result.dietSeCode,
             dietNm: result.dietNm,
-            fdNm: result.fdNm,
-            rtnImageDc: result.rtnImageDc,
             rtnStreFileNm: result.rtnStreFileNm,
             rtnThumbFileNm: result.rtnThumbFileNm,
             registDt: result.registDt
@@ -113,65 +111,83 @@ module.exports.recomendDietDtl = async function (cntntsNo) {
       result.dietCn = food.dietCn["_cdata"]; // 식단 내용
       result.matrlInfo = food.matrlInfo["_cdata"]; // 재료 정보
       result.dietNtrsmallInfo = food.dietNtrsmallInfo["_cdata"]; // 식단 영양소 정보
-      result.chlsInfo = food.chlsInfo["_cdata"]; // 콜레스테롤 정보 
-      result.clciInfo = food.clciInfo["_cdata"]; // 칼슘 정보
-      result.clriInfo = food.clriInfo["_cdata"]; // 칼로리 정보
-      result.crbhInfo = food.crbhInfo["_cdata"]; // 당질 정보
-      result.crfbInfo = food.crfbInfo["_cdata"]; // 조섬요 정보
-      result.frmlasaltEqvlntqyInfo = food.frmlasaltEqvlntqyInfo["_cdata"]; // 식염 상당량 정보
-      result.ircnInfo = food.ircnInfo["_cdata"]; // 철분 정보
-      result.naInfo = food.naInfo["_cdata"]; // 나트륨 정보
-      result.ntkQyInfo = food.ntkQyInfo["_cdata"]; // 섭취량 정보
-      result.ntrfsInfo = food.ntrfsInfo["_cdata"]; // 지질 정보
-      result.protInfo = food.protInfo["_cdata"]; // 단백질 정보
-      result.vtmaInfo = food.vtmaInfo["_cdata"]; // 비타민A 정보
-      result.vtmbInfo = food.vtmbInfo["_cdata"]; // 비타민B 정보
-      result.vtmcInfo = food.vtmcInfo["_cdata"]; // 비타민C 정보
       result.registDt = food.registDt["_cdata"]; // 등록일
       console.log(`[${result.cntntsNo} 식단의]: ${result.fdCntntsNo} 음식 처리중`);
-  
-      // 일반, 썸네일 이미지 파일 다운로드
-      if (result.rtnImageDc) {
-        await downloadImage(result.rtnImageDc, "public/image/food/normal", result.rtnStreFileNm);
-        await downloadImage(result.rtnImageDc, "public/image/food/thumbnail", result.rtnThumbFileNm);
-      }
-  
-      // DB에 해당 음식이 아직 없다면 DB에 저장
-      food = await Food.exists({fdCntntsNo: result.fdCntntsNo});
-      if (!food) {
-        let food = new Food({
-          fdCntntsNo: result.fdCntntsNo,
-          cntntsSj: result.cntntsSj,
-          fdNm: result.fdNm,
-          fdInfo: result.fdInfo,
-          fdInfoFirst: result.fdInfoFirst,
-          cntntsNo: result.cntntsNo,
-          dietNm: result.dietNm,
-          dietDtlNm: result.dietDtlNm,
-          ckngMthInfo: result.ckngMthInfo,
-          rtnImageDc: result.rtnImageDc,
-          rtnStreFileNm: result.rtnStreFileNm,
-          rtnThumbFileNm: result.rtnThumbFileNm,
-          dietCn: result.dietCn,
-          matrlInfo: result.matrlInfo,
-          dietNtrsmallInfo: result.dietNtrsmallInfo,
-          chlsInfo: result.chlsInfo,
-          clciInfo: result.clciInfo,
-          clriInfo: result.clriInfo,
-          crbhInfo: result.crbhInfo,
-          crfbInfo: result.crfbInfo,
-          frmlasaltEqvlntqyInfo: result.frmlasaltEqvlntqyInfo,
-          ircnInfo: result.ircnInfo,
-          naInfo: result.naInfo,
-          ntkQyInfo: result.ntkQyInfo,
-          ntrfsInfo: result.ntrfsInfo,
-          protInfo: result.protInfo,
-          vtmaInfo: result.vtmaInfo,
-          vtmbInfo: result.vtmbInfo,
-          vtmcInfo: result.vtmcInfo,
-          registDt: result.registDt
-        });
-        await food.save();
+
+      // 영양소 정보가 있는 데이터만 DB에 저장한다.
+      // 만약 데이터가 없는 음식이 있다면 그 음식을 포함하는 식단도 DB에서 제거한다.
+      if (result.dietNtrsmallInfo) {
+
+        // 일반, 썸네일 이미지 파일 다운로드 ==================================================
+        if (result.rtnImageDc) {
+          await downloadImage(result.rtnImageDc, "public/image/food/normal", result.rtnStreFileNm);
+          await downloadImage(result.rtnImageDc, "public/image/food/thumbnail", result.rtnThumbFileNm);
+        }
+    
+        // DB에 해당 음식이 아직 없다면 DB에 저장 ==================================================
+        food = await Food.exists({fdCntntsNo: result.fdCntntsNo});
+        if (!food) {
+          let food = new Food({
+            fdCntntsNo: result.fdCntntsNo,
+            cntntsNo: result.cntntsNo,
+            fdNm: result.fdNm,
+            ckngMthInfo: result.ckngMthInfo,
+            rtnStreFileNm: result.rtnStreFileNm,
+            rtnThumbFileNm: result.rtnThumbFileNm,
+            matrlInfo: result.matrlInfo,
+            registDt: result.registDt
+          });
+          await food.save();
+        }
+
+        // 음식에 기록되어있는 정보들을 가지고 필요한 데이터를 식단 DB에 저장 ==================================================
+        let diet = await Diet.findOne({cntntsNo: result.cntntsNo});
+        let nutritions = result.dietNtrsmallInfo.replace(/ /g,"").split(",");
+    
+        // 영양성분이 원래 콤마로 구분되어야 하는데 당질127g단백질50g 이렇게 되어있는 데이터가 있어서 직접 분리해줌.
+        if (nutritions.length == 3) {
+          let targetStr = nutritions[1].replace("g", "g,").split(",");
+    
+          nutritions.splice(1, 1);
+          nutritions.push(targetStr[0]);
+          nutritions.push(targetStr[1]);
+        }
+    
+        // 영양소 정보 문자열에서 영양 성분마다 파싱해서 값 추출하여 저장
+        for (nutr of nutritions) {
+          let value = nutr.replace(/[^0-9]/g, ''); // 숫자만 추출
+    
+          // 지질-g 처럼 숫자가 추출 불가능한 형태인 데이터가 있으면 그 영양성분의 값은 0으로 설정함
+          if (value.length === 0) {
+            value = 0;
+          }
+    
+          // 추출한 영양성분의 값을 저장
+          if (nutr.includes("열량")) {
+            diet.clriInfo = value;
+          } else if (nutr.includes("당질")) {
+            diet.crbhInfo = value;
+          } else if (nutr.includes("단백질")) {
+            diet.protInfo = value;
+          } else if (nutr.includes("지질")) {
+            diet.ntrfsInfo = value;
+          }
+        }
+
+        // 식단 상세 정보 저장
+        diet.dietCn = result.dietCn;
+
+        // 식단 영양소 정보 저장
+        diet.dietNtrsmallInfo = result.dietNtrsmallInfo;
+
+        await diet.save();
+      // 음식에 영양소 정보가 없다면 해당 음식이 포함된 식단 DB에서 제거
+      } else {
+        let diet = await Diet.exists({cntntsNo: result.cntntsNo});
+        if (diet) {
+          console.log(`${result.cntntsNo} 식단 삭제`);
+          await Diet.deleteOne({cntntsNo: result.cntntsNo});
+        }
       }
   
     } catch (err) {
@@ -187,7 +203,16 @@ async function downloadImage(url, directory, filename) {
   splitedUrl[splitedUrl.length - 1] = filename;
   destPath = path.join(process.env.INIT_CWD, directory, filename);
 
-  // 파일이 아직 폴더에 없는 경우에만 다운로드한다.
+  // 폴더가 아직 없으면 폴더를 생성한다.
+  await fsPromises.access(imgPath, fs.constants.F_OK).catch(async () => {
+    try {
+      await fsPromises.mkdir(directory, { recursive: true });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  // 이미지 파일이 아직 없으면 다운로드한다.
   await fsPromises.access(imgPath, fs.constants.F_OK).catch(async () => {
     const response = await axios({
       url: splitedUrl.join("/"),

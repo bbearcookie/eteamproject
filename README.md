@@ -12,6 +12,7 @@ public: 정적 데이터들이 담겨있는 폴더이다.
                   이 식단 데이터를 가지고 이용하기 좋은 형태로 바꾸는 로직을 작성하였다.
   public/image/diet: 각종 식단의 이미지가 저장된 폴더이다.
   public/image/food: 각종 음식의 이미지가 저장된 폴더이다.
+  public/plugin: 부트스트랩, jQuery 등 라이브러리들이 저장된 폴더이다.
 
 src: node.js 서버의 각종 소스코드가 담겨있는 폴더이다.
   src/config: 서버에 대한 각종 설정들이 담겨있다.

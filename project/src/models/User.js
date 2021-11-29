@@ -4,7 +4,7 @@ const crypto = require("crypto");
 // 사용자 계정 스키마
 const UserSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true }, // 아이디
-  hashed_password: { type: String, default: "" }, // 암호화된 비밀번호
+  hashed_password: { type: String, required: true }, // 암호화된 비밀번호
   salt: { type: String, default: "" }, // 평문의 비밀번호를 암호화하기 위해 사용할 암호화 키
   role: { type: String, default: "role_user" } // 사용자의 역할. 일반사용자 or 관리자 등을 구분
   }, { timestamp: true });
