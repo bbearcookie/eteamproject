@@ -4,12 +4,12 @@ const { passport } = require("../config/passport");
 
 // 로그인 페이지 보여줌
 router.get("/login", async (req, res) => {
-  res.render("pages/auth/login", { alert: req.flash() });
+  res.render("pages/auth/login.hbs", { alert: req.flash() });
 });
 
 // 회원가입 페이지 보여줌
 router.get("/signup", async (req, res) => {
-  res.render("pages/auth/signup", { alert: req.flash() });
+  res.render("pages/auth/signup.hbs", { alert: req.flash() });
 });
 
 // 로그인 처리

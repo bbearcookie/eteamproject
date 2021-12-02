@@ -1,0 +1,236 @@
+<script>
+  // 식단의 정보를 기록해두는 input태그를 생성하는 함수
+  function createDietField(dietEl, fieldName, fieldValue) {
+    let dietFieldEl = document.createElement("input");
+    dietFieldEl.setAttribute("type", "hidden");
+    dietFieldEl.classList.add(fieldName);
+    dietFieldEl.value = fieldValue;
+    dietEl.appendChild(dietFieldEl);
+  }
+
+  // 처리 결과에 메시지를 생성하는 함수
+  function createLogMessage(message) {
+    let cardBodyEl = document.querySelector(".process-log .card-body");
+    let logEl = document.createElement("p");
+    logEl.innerText = message;
+    cardBodyEl.insertBefore(logEl, cardBodyEl.querySelector("p"));
+  }
+
+  // 농사로API에서 받아온 식단구분코드 목록을 가지고
+  // 순회하면서 모든 식단의 정보를 json 형태로 서버의 파일에 저장.
+  async function downloadDietList_Recursion(index) {
+    let dietSeCodeList = document.querySelector("#dietSeCodeList").value.split(",");
+    let message = "";
+
+    // 모든 값 순회
+    if (index < dietSeCodeList.length) {
+      console.log(dietSeCodeList[index]);
+
+      try {
+        const res = await axios.post(`/admin/api/dietSeCode/${index}`, {
+          dietSeCodeList,
+        });
+        
+        // 서버단 에러
+        if (!res.data.error) {
+          message = res.data.message;
+        } else {
+          message = `${res.data.error.toString()}`;
+          console.error(res.data);
+        }
+      // 클라이언트단 에러
+      } catch (err) {
+        console.error(err);
+        message = err;
+      }
+      
+      createLogMessage(message);
+      return downloadDietList_Recursion(index + 1);
+    }
+
+    createLogMessage("모든 식단 정보를 서버에 파일로 저장 완료! 이제 식단을 하나씩 DB에 저장해야합니다.");
+  }
+
+  // 파일로 저장해둔 식단들의 목록 데이터를 가지고
+  // 순회하면서 모든 식단의 정보를 DB에 저장
+  async function saveDiet_Recursion(index) {
+    let message = "";
+    let numOfDiet = parseInt(document.querySelector("#dietListArea").children.length);
+    
+    // 모든 값 순회
+    if (index < numOfDiet) {
+      let dietEl = document.querySelector(`#dietListArea > input[value="${index}"]`);
+      let diet = {};
+
+      for (field of dietEl.childNodes) {
+        diet[field.getAttribute("class")] = field.getAttribute("value");
+      }
+
+      try {
+        const res = await axios.post(`/admin/api/diet/${index}`, {
+          diet: diet
+        });
+
+        // 서버단 에러
+        if (!res.data.error) {
+          message = res.data.message;
+        } else {
+          message = `${res.data.error.toString()}`;
+          console.error(res.data);
+        }
+      // 클라이언트단 에러
+      } catch (err) {
+        console.error(err);
+        message = err;
+      }
+
+
+      createLogMessage(message);
+      return saveDiet_Recursion(index + 1);
+    }
+
+    createLogMessage("모든 식단 DB에 저장 완료! 이제 음식 데이터를 받아와야 합니다. 그 과정에 영양성분 미포함 데이터를 제거하며 정제합니다.");
+  }
+
+  // 식단이 포함하는 모든 음식의 정보를 DB에 저장
+  async function saveFood_Recursion(index) {
+    let message = "";
+    let numOfDiet = parseInt(document.querySelector("#dietListArea").children.length);
+
+    // 모든 값 순회
+    if (index < numOfDiet) {
+      let dietEl = document.querySelector(`#dietListArea > input[value="${index}"]`);
+      let diet = {};
+
+      for (field of dietEl.childNodes) {
+        diet[field.getAttribute("class")] = field.getAttribute("value");
+      }
+
+      try {
+        const res = await axios.post(`/admin/api/food/${index}`, {
+          diet: diet
+        });
+
+        // 서버단 에러
+        if (!res.data.error) {
+          message = res.data.message;
+        } else {
+          message = `${res.data.error.toString()}`;
+          console.error(res.data);
+        }
+      // 클라이언트단 에러
+      } catch (err) {
+        console.error(err);
+        message = err;
+      }
+
+      createLogMessage(message);
+      return saveFood_Recursion(index + 1);
+    }
+
+    // 마지막으로 여과되지 않은 열량 영양성분이 0인 데이터를 삭제 처리
+    try {
+      const res = await axios.delete(`/admin/api/food`);
+
+      // 서버단 에러
+      if (!res.data.error) {
+        message = res.data.message;
+      } else {
+        message = `${res.data.error.toString()}`;
+        console.error(res.data);
+      }
+    // 클라이언트단 에러
+    } catch (err) {
+      console.error(err);
+      message = err;
+    }
+    if (message !== "") { createLogMessage(message); }
+    
+    createLogMessage("모든 음식 DB에 저장 완료! 이제 식단과 음식의 이미지를 받아와야 합니다.");
+  }
+
+  // 식단 이미지 다운로드
+  async function downloadDietImage_Recursion(index) {
+    let message = "";
+    let numOfDiet = parseInt(document.querySelector("#dietListArea").children.length);
+
+    // 모든 값 순회
+    if (index < numOfDiet) {
+      let dietEl = document.querySelector(`#dietListArea > input[value="${index}"]`);
+      let diet = {};
+
+      for (field of dietEl.childNodes) {
+        diet[field.getAttribute("class")] = field.getAttribute("value");
+      }
+
+      try {
+        const res = await axios.get(`/admin/api/dietImage/${index}`, {
+          params: {
+            diet
+          }
+        });
+
+        // 서버단 에러
+        if (!res.data.error) {
+          message = res.data.message;
+        } else {
+          message = `${res.data.error.toString()}`;
+          console.error(res.data);
+        }
+      // 클라이언트단 에러
+      } catch (err) {
+        console.error(err);
+        message = err;
+      }
+
+      createLogMessage(message);
+      return downloadDietImage_Recursion(index + 1);
+    }
+
+
+    if (message !== "") { createLogMessage(message); }
+    createLogMessage("모든 식단 이미지 저장 완료!");
+  }
+
+  // 음식 이미지 다운로드
+  async function downloadFoodImage_Recursion(index) {
+    let message = "";
+    let numOfFood = parseInt(document.querySelector("#foodListArea").children.length);
+
+    // 모든 값 순회
+    if (index < numOfFood) {
+      let foodEl = document.querySelector(`#foodListArea > input[value="${index}"]`);
+      let food = {};
+
+      for (field of foodEl.childNodes) {
+        food[field.getAttribute("class")] = field.getAttribute("value");
+      }
+
+      try {
+        const res = await axios.get(`/admin/api/foodImage/${index}`, {
+          params: {
+            food
+          }
+        });
+
+        // 서버단 에러
+        if (!res.data.error) {
+          message = res.data.message;
+        } else {
+          message = `${res.data.error.toString()}`;
+          console.error(res.data);
+        }
+      // 클라이언트단 에러
+      } catch (err) {
+        console.error(err);
+        message = err;
+      }
+
+      createLogMessage(message);
+      return downloadFoodImage_Recursion(index + 1);
+    }
+    
+    if (message !== "") { createLogMessage(message); }
+    createLogMessage("모든 음식 이미지 저장 완료!");
+  }
+</script>

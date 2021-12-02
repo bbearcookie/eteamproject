@@ -4,7 +4,7 @@ const router = require("express").Router();
 router.get("/", async (req, res) => {
   console.log(req.user);
 
-  res.render("pages/home", {
+  res.render("pages/home.hbs", {
     isAuthenticated: req.isAuthenticated(),
     user: req.user
   });

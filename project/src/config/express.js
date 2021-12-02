@@ -3,6 +3,7 @@ const redis = require("redis");
 const session = require("express-session");
 const RedisStore = require("connect-redis")(session);
 const { engine } = require("express-handlebars");
+const ejs = require("ejs");
 const flash = require("connect-flash");
 const path = require("path");
 const app = express();
@@ -16,7 +17,7 @@ const app = express();
 */
 
 // 익스프레스 모듈의 기본 설정들을 하는 함수
-module.exports.config = function (test) {
+module.exports.config = function () {
   // 세션 설정
   const redisClient = redis.createClient();
   app.use(session({
@@ -43,7 +44,8 @@ module.exports.config = function (test) {
       }
     }
   }));
-  app.set("view engine", ".hbs");
+  app.set("view engine", "hbs");
+  app.set("view engine", "ejs");
   app.set("views", "./src/views");
 
   // connect-flash 사용

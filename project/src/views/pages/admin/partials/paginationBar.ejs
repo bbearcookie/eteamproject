@@ -1,0 +1,137 @@
+<style>
+  .page-item:hover {
+    cursor: pointer;
+  }
+</style>
+
+<!-- 페이지네이션 바 -->
+<nav aria-label="Page Navigation">
+  <p class="d-none" id="numOfListItem"><%=numOfListItem%></p> <!-- 페이지 계산을 위해 사용되는 음식 총 갯수 -->
+  <ul class="pagination">
+    <li class="page-item">
+      <a class="page-link" aria-label="Previous" onclick="onClickPreviousPageItem()">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <% let minPage, maxPage; %>
+    <% if (pageNo <= 10) { minPage = 1; } %> <!-- 첫 페이지는 무조건 1임. -->
+    <% if (pageNo > 10) { minPage = parseInt((pageNo - 1) / 10) * 10 + 1; } %> <!-- 그 다음부턴 10씩 증가함. -->
+    <% if (minPage + 10 < parseInt(numOfListItem / 10)) { maxPage = minPage + 9 } %> <!-- 페이지 리스트에 보여주는건 최대 10개임. -->
+    <% if (minPage + 10 >= parseInt(numOfListItem / 10)) { maxPage = parseInt(numOfListItem / 10) + 1 } %> <!-- 10개 이전에 보여줄 데이터들이 끝나면 최대 페이지는 거기까지만임. -->
+    <% for (let i = minPage; i <= maxPage; i++) { %>
+      <li class="page-item"><a class="page-link" value="<%=i%>" onclick="onClickPageItem(this)"><%=i%></a></li>
+    <% } %>
+    <li class="page-item" id="next-page-item">
+      <a class="page-link" aria-label="Next" onclick="onClickNextPageItem()">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  function isEmpty(str) {
+    if (typeof str == "undefined" || str == null || str == "")
+      return true;
+    else
+      return false;
+  }
+
+  // 페이지 번호 클릭 시 해당 페이지 출력하도록 서버에 요청
+  function onClickPageItem(e) {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+    let pageNoEl = document.querySelector("#pageNo");
+
+    // 쿼리 스트링이 있었다면 그것도 담아서 서버에 전송
+    let queryString = "pageNo=" + e.innerText;
+    for (let el of Object.entries(params)) {
+
+      // 페이지 번호는 새로 계산했으니 쿼리에 또 담으면 안됨.
+      if (el[0] !== "pageNo") {
+        queryString += `&${el[0]}=${el[1]}`;
+      }
+    }
+
+    window.location.href = "/admin/food?" + queryString;
+  }
+
+  // 이전 페이지 클릭 시
+  function onClickPreviousPageItem() {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+
+    let pageNo = params.pageNo;
+    let numOfListItem = document.getElementById("numOfListItem").innerText;
+
+    if (isEmpty(pageNo)) {
+      pageNo = 1;
+    } else {
+      pageNo = parseInt(pageNo);
+    }
+
+    // 만약 페이지 네비에 마지막 페이지가 보이는 상태라면 그 마지막 페이지로 이동
+    let previousPage = pageNo - 10;
+    if (previousPage < 1) previousPage = 1;
+
+    // 쿼리 스트링이 있었다면 그것도 담아서 서버에 전송
+    let queryString = "pageNo=" + previousPage;
+    for (let el of Object.entries(params)) {
+
+      // 페이지 번호는 새로 계산했으니 쿼리에 또 담으면 안됨.
+      if (el[0] !== "pageNo") {
+        queryString += `&${el[0]}=${el[1]}`;
+      }
+    }
+
+    window.location.href = "/admin/food?" + queryString;
+  }
+
+  // 다음 페이지 클릭 시
+  function onClickNextPageItem() {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+
+    let pageNo = params.pageNo;
+    let numOfListItem = document.getElementById("numOfListItem").innerText;
+    if (isEmpty(pageNo)) {
+      pageNo = 1;
+    } else {
+      pageNo = parseInt(pageNo);
+    }
+
+    // 만약 페이지 네비에 마지막 페이지가 보이는 상태라면 그 마지막 페이지로 이동
+    let nextPage = pageNo + 10;
+
+    if (nextPage >= parseInt(numOfListItem / 10) + 1) {
+      nextPage = parseInt(numOfListItem / 10) + 1;
+    }
+
+    // 쿼리 스트링이 있었다면 그것도 담아서 서버에 전송
+    let queryString = "pageNo=" + nextPage;
+    for (let el of Object.entries(params)) {
+
+      // 페이지 번호는 새로 계산했으니 쿼리에 또 담으면 안됨.
+      if (el[0] !== "pageNo") {
+        queryString += `&${el[0]}=${el[1]}`;
+      }
+    }
+
+    window.location.href = "/admin/food?" + queryString;
+  }
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+    
+    // 현재 보고 있는 페이지의 아이템에 active 속성 추가
+    let pageLink = document.querySelector(`.page-link[value='${params.pageNo}']`);
+    if (pageLink) {
+      pageLink.parentElement.classList.add("active");
+    } else {
+      document.querySelector(`.page-link[value='1']`).parentElement.classList.add("active");
+    }
+  }
+</script>

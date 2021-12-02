@@ -50,7 +50,7 @@ router.get("/count", async (req, res) => {
 
 // multer로 데이터 받는거를 테스트할 페이지 보여줌.
 router.get("/multer", async (req, res) => {
-  res.render("pages/test/multer");
+  res.render("pages/test/multer.hbs");
 });
 
 // multer로 데이터 받는거 테스트

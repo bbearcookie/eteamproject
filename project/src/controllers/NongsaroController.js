@@ -44,4 +44,42 @@ router.get("/recomendDietDtl", async (req, res) => {
   res.send("처리 완료!");
 });
 
+// DB에 저장된 모든 음식의 이미지를 다운로드
+router.get("/recomendDietDtl/image", async (req, res) => {
+  let foodList = await Food.find({});
+
+  for (food of foodList) {
+    // 이미지 다운로드
+    let url = "http://www.nongsaro.go.kr/cms_contents/809/filename";
+    let directory = "public/image/food/normal";
+    let filename = food.rtnStreFileNm;
+    await nongsaroService.downloadImage(url, directory, filename);
+    
+    // 썸네일 이미지 다운로드
+    directory = "public/image/food/thumbnail";
+    filename = food.rtnThumbFileNm;
+    await nongsaroService.downloadImage(url, directory, filename);
+  }
+
+  res.send("처리 완료");
+});
+
+// 특정 음식의 이미지를 다운로드
+router.get("/recomendDietDtl/image/:fdCntntsNo", async (req, res) => {
+  let { fdCntntsNo } = req.params;
+
+  // 이미지 다운로드
+  let url = "http://www.nongsaro.go.kr/cms_contents/809/filename";
+  let directory = "public/image/food/normal";
+  let filename = `${fdCntntsNo}_MF_ATTACH_01.jpg`;
+  await nongsaroService.downloadImage(url, directory, filename);
+  
+  // 썸네일 이미지 다운로드
+  directory = "public/image/food/thumbnail";
+  filename = `${fdCntntsNo}_MF_ATTACH_01_TMB.jpg`;
+  await nongsaroService.downloadImage(url, directory, filename);
+
+  res.send("처리 완료");
+});
+
 module.exports = router;

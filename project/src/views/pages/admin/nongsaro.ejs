@@ -1,0 +1,268 @@
+<style>
+  .main {
+    flex-basis: 100%;
+    flex-shrink: 1;
+    flex-grow: 0;
+  }
+  .process-log p {
+    margin-bottom: 0;
+  }
+</style>
+
+<!-- 변수처럼 사용할 공간 -->
+<input type="hidden" id="dietSeCodeList" value="">
+<div class="d-none" id="dietListArea"></div>
+<div class="d-none" id="foodListArea"></div>
+
+<!-- 음식 관리 메인 화면 -->
+<main class="main m-5">
+
+  <section class="card">
+    <div class="card-header">
+      농사로 데이터
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">최신 식단 음식 데이터 DB 받아오기</h5>
+      <p class="card-text">
+        농촌진흥청이 제공하는 농사로API를 통해 가장 최근의 식단과 음식 데이터를 가져옵니다.<br/>
+        API 요청시 받게되는 XML 타입의 값을 Node.js 서버가 JSON 형식으로 변환 후<br/>
+        우리 서비스에서 이용할만한 유용한 값들만 추출하여 DB에 저장합니다.<br/><br/>
+        너무 자주 요청하면 농사로 API 서버가 응답을 거부하는 문제가 발생할 가능성이 있으니<br/>
+        가끔씩만 이용하는게 좋습니다.<br/>
+        처리 결과의 안내에 따라 버튼을 순차적으로 눌러주세요!<br/>
+        먼저 식단 데이터를 받아오는 것부터 시작해야 합니다.
+      </p>
+      <button class="btn btn-primary" onclick="onClickGetDietDataButton()">식단 데이터 받아오기</button>
+      <button class="btn btn-primary" onclick="onClickSaveDietButton()">식단을 DB에 저장하기</button>
+      <button class="btn btn-primary" onclick="onClickGetFoodDataButton()">음식 데이터 받아오기</button>
+      <button class="btn btn-primary" onclick="onClickGetImageButton()">이미지 받아오기</button>
+    </div>
+  </section>
+
+  <section class="mt-5 card process-log">
+    <div class="card-header">
+      처리 결과
+    </div>
+    <div class="card-body">
+    </div>
+  </section>
+
+</main>
+
+<%- include("js/nongsaro.ejs") %>
+<script>
+
+  // 데이터 받아오기 버튼 클릭시
+  async function onClickGetDietDataButton() {
+    let message = "";
+
+    try {
+      const res = await axios.get("/admin/api/dietSeCode");
+
+      // 서버단에서부터 넘어온 에러가 있으면 로그에 에러 메시지 남김. 없으면 가져온 값을 남김.
+      if (!res.data.error) {
+        message = res.data.message;
+        document.querySelector("#dietSeCodeList").value = res.data.dietSeCodeList;
+        downloadDietList_Recursion(0);
+      } else {
+        message = `${res.data.error.toString()}`;
+        console.error(res.data);
+      }
+
+    // 클라이언트단의 에러
+    } catch (err) {
+      console.error(err);
+      message = err;
+    }
+
+    createLogMessage(message);
+  }
+
+  // 식단을 DB에 저장하기 버튼 클릭시
+  async function onClickSaveDietButton() {
+    let message = "";
+
+    try {
+      const res = await axios.get("/admin/api/diet");
+
+      // 서버단의 에러
+      if (!res.data.error) {
+        message = res.data.message;
+
+        // 서버로부터 받은 식단 데이터들을 input태그에 숨겨놓는다.
+        let i = 0;
+        let dietListAreaEl = document.querySelector("#dietListArea");
+        dietListAreaEl.innerHTML = "";
+        for (diet of res.data.dietList) {
+
+          // 식단
+          let dietFieldEl;
+          let dietEl = document.createElement("input");
+          dietEl.setAttribute("type", "hidden");
+          dietEl.value = i;
+          dietListAreaEl.appendChild(dietEl);
+
+          // 식단의 정보들
+          createDietField(dietEl, "dietSeCode", diet.dietSeCode.toString());
+          createDietField(dietEl, "cntntsNo", diet.cntntsNo.toString());
+          createDietField(dietEl, "dietNm", diet.dietNm);
+          createDietField(dietEl, "fdNm", diet.fdNm);
+          createDietField(dietEl, "rtnImageDc", diet.rtnImageDc);
+          createDietField(dietEl, "rtnStreFileNm", diet.rtnStreFileNm);
+          createDietField(dietEl, "rtnThumbFileNm", diet.rtnThumbFileNm);
+          createDietField(dietEl, "registDt", diet.registDt);
+
+          i++;
+        }
+
+        saveDiet_Recursion(0);
+      } else {
+        message = `${res.data.error.toString()}`;
+        console.error(res.data);
+      }
+    // 클라이언트단의 에러
+    } catch (err) {
+      console.error(err);
+      message = err;
+    }
+
+    createLogMessage(message);
+  }
+
+  // 음식 데이터 받아오기 버튼 클릭시
+  async function onClickGetFoodDataButton() {
+    let message = "";
+
+    try {
+      const res = await axios.get("/admin/api/dietDB");
+
+      // 서버단의 에러
+      if (!res.data.error) {
+        message = `총 ${res.data.dietList.length} 개의 식단이 포함하는 음식중 농사로API가 제공하는 값이 있다면 가져오겠습니다.`;
+
+        // 서버로부터 받은 식단 데이터들을 input태그에 숨겨놓는다.
+        let i = 0;
+        let dietListAreaEl = document.querySelector("#dietListArea");
+        dietListAreaEl.innerHTML = "";
+        for (diet of res.data.dietList) {
+
+          // 식단
+          let dietFieldEl;
+          let dietEl = document.createElement("input");
+          dietEl.setAttribute("type", "hidden");
+          dietEl.value = i;
+          dietListAreaEl.appendChild(dietEl);
+
+          // 식단의 정보들
+          createDietField(dietEl, "dietSeCode", diet.dietSeCode.toString());
+          createDietField(dietEl, "cntntsNo", diet.cntntsNo.toString());
+          createDietField(dietEl, "dietNm", diet.dietNm);
+          createDietField(dietEl, "fdNm", diet.fdNm);
+          createDietField(dietEl, "rtnImageDc", diet.rtnImageDc);
+          createDietField(dietEl, "rtnStreFileNm", diet.rtnStreFileNm);
+          createDietField(dietEl, "rtnThumbFileNm", diet.rtnThumbFileNm);
+          createDietField(dietEl, "registDt", diet.registDt);
+
+          i++;
+        }
+
+        saveFood_Recursion(0);
+      } else {
+        message = `${res.data.error.toString()}`;
+        console.error(res.data);
+      }
+    // 클라이언트단의 에러
+    } catch (err) {
+      console.error(err);
+      message = err;
+    }
+
+    createLogMessage(message);
+  }
+
+  // 이미지 다운로드 버튼 클릭시
+  async function onClickGetImageButton() {
+    let message = "";
+    try {
+      // 식단 데이터 가져오기
+      let res = await axios.get("/admin/api/dietDB");
+
+      // 서버단의 에러
+      if (!res.data.error) {
+        createLogMessage(`총 ${res.data.dietList.length} 개의 식단의 이미지를 다운로드 해야함.`);
+
+        let i = 0;
+        let dietListAreaEl = document.querySelector("#dietListArea");
+        dietListAreaEl.innerHTML = "";
+        for (diet of res.data.dietList) {
+
+          // 식단
+          let dietFieldEl;
+          let dietEl = document.createElement("input");
+          dietEl.setAttribute("type", "hidden");
+          dietEl.value = i;
+          dietListAreaEl.appendChild(dietEl);
+
+          // 식단의 정보들
+          createDietField(dietEl, "dietSeCode", diet.dietSeCode.toString());
+          createDietField(dietEl, "cntntsNo", diet.cntntsNo.toString());
+          createDietField(dietEl, "dietNm", diet.dietNm);
+          createDietField(dietEl, "rtnStreFileNm", diet.rtnStreFileNm);
+          createDietField(dietEl, "rtnThumbFileNm", diet.rtnThumbFileNm);
+          createDietField(dietEl, "registDt", diet.registDt);
+
+          i++;
+        }
+      } else {
+        message = `${res.data.error.toString()}`;
+        console.error(res.data);
+      }
+
+      // 음식 데이터 가져오기
+      res = await axios.get("/admin/api/foodDB");
+
+      // 서버단의 에러
+      if (!res.data.error) {
+        createLogMessage(`총 ${res.data.foodList.length} 개의 음식의 이미지를 다운로드 해야함.`);
+
+        let i = 0;
+        let foodListAreaEl = document.querySelector("#foodListArea");
+        foodListAreaEl.innerHTML = "";
+        for (food of res.data.foodList) {
+
+          // 음식
+          let foodFieldEl;
+          let foodEl = document.createElement("input");
+          foodEl.setAttribute("type", "hidden");
+          foodEl.value = i;
+          foodListAreaEl.appendChild(foodEl);
+
+          // 음식의 정보들
+          createDietField(foodEl, "fdCntntsNo", food.fdCntntsNo.toString());
+          createDietField(foodEl, "cntntsNo", food.cntntsNo.toString());
+          createDietField(foodEl, "fdNm", food.fdNm);
+          createDietField(foodEl, "ckngMthInfo", food.ckngMthInfo);
+          createDietField(foodEl, "rtnStreFileNm", food.rtnStreFileNm);
+          createDietField(foodEl, "rtnThumbFileNm", food.rtnThumbFileNm);
+          createDietField(foodEl, "matrlInfo", food.matrlInfo);
+          createDietField(foodEl, "registDt", food.registDt);
+
+          i++;
+        }
+      } else {
+        message = `${res.data.error.toString()}`;
+        console.error(res.data);
+      }
+
+      await downloadDietImage_Recursion(0);
+      await downloadFoodImage_Recursion(0);
+
+    // 클라이언트단의 에러
+    } catch (err) {
+      console.error(err);
+      message = err;
+    }
+
+    createLogMessage(message);
+  }
+</script>

@@ -1,0 +1,53 @@
+<style>
+  .sidebar {
+    flex-basis: 20vh;
+    flex-shrink: 0;
+    /* width: 20vh; */
+    min-height: 100%;
+    background: #494949;
+    color: white;
+    box-shadow: 2px 3px 5px 0px #494949;
+  }
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+  .sidebar .link-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .sidebar .link-area:hover, .sidebar .link-area.active {
+    background-color: #2F2F2F;
+  }
+</style>
+
+<sidebar class="d-flex flex-column align-items-center sidebar">
+  <article class="d-flex flex-column align-items-center py-5">
+    <h4>하루건강</h4>
+    <h4>관리자 페이지</h4>
+  </article>
+  <a class="link-area" value="main" href="/admin">메인 페이지</a>
+  <a class="link-area" href="#">사용자 관리</a>
+  <a class="link-area" href="#">식단 관리</a>
+  <a class="link-area" value="foodList" href="/admin/food">음식 관리</a>
+  <a class="link-area" href="#">운동 관리</a>
+  <a class="link-area" value="nongsaro" href="/admin/nongsaro">농사로 데이터</a>
+  <a class="link-area" href="#">로그아웃</a>
+</sidebar>
+
+<script>
+  window.addEventListener("load", onLoad, true);
+
+  function onLoad() {
+    let pageName = document.querySelector("#pageName").value;
+
+    document.querySelector(`.link-area[value='${pageName}']`).classList.add("active");
+  }
+</script>
