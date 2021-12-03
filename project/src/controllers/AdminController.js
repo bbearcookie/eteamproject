@@ -59,12 +59,14 @@ router.use("/", async (req, res, next) => {
   next();
 });
 
+// 농사로API 관련 기능들
 router.use("/api", adminApiController);
 
 // 관리자 메인 페이지 보여줌
 router.get("/", async (req, res) => {
   res.render("pages/admin/main.ejs", {
-    pageName: "main"
+    pageName: "main",
+    sectionName: "main"
   });
 });
 
@@ -100,7 +102,6 @@ router.get("/diet/detail/:cntntsNo", async (req, res) => {
 
 // 식단 생성 페이지 보여줌
 router.get("/diet/editor", async (req, res) => {
-  res.render("pages/admin/dietEditor.hbs");
 });
 
 // 식단 수정 페이지 보여줌
@@ -124,7 +125,7 @@ router.delete("/diet/:cntntsNo", async (req, res) => {
 
 });
 
-// 식단 목록 보여줌
+// 음식 목록 페이지
 router.get("/food", async (req, res) => {
   let { searchOption, searchKeyword } = req.query;
   let pageNo;
@@ -143,9 +144,14 @@ router.get("/food", async (req, res) => {
       findExpr[searchOption] = { $regex: `.*${searchKeyword}.*` };
     }
 
-    // 식단코드는 정확히 일치하는지 비교.
-    if (searchOption === "fdCntntsNo" && typeof searchKeyword === typeof Number) {
-      findExpr[searchOption] = { $eq: parseInt(searchKeyword) };
+    // 식단코드는 정확히 일치하는지 비교. 키워드가 숫자가 아니면 아무것도 반환안함.
+    if (searchOption === "fdCntntsNo") {
+      let numberedKeyword = /^\d+$/.exec(searchKeyword);
+      if (numberedKeyword) {
+        findExpr[searchOption] = { $eq: parseInt(numberedKeyword[0]) };
+      } else {
+        findExpr[searchOption] = { $eq: -1 };
+      }
     }
   }
 
@@ -158,6 +164,7 @@ router.get("/food", async (req, res) => {
 
   res.render("pages/admin/main", {
     pageName: "foodList",
+    sectionName: "food",
     foodList: foodList.slice(minContent, maxContent), // 보여줄 음식 목록
     numOfListItem: numOfFood, // 보여줄 음식 목록 갯수
     pageNo: pageNo, // 보고 있는 페이지 번호
@@ -166,10 +173,55 @@ router.get("/food", async (req, res) => {
   });
 });
 
+// 음식 상세 페이지
+router.get("/food/detail/:fdCntntsNo", async (req, res) => {
+  let { pageNo, searchOption, searchKeyword } = req.query;
+
+  let { fdCntntsNo } = req.params;
+  fdCntntsNo = parseInt(fdCntntsNo);
+
+  let food = await Food.findOne({fdCntntsNo: fdCntntsNo});
+  let error = false;
+  if (food) {
+    // console.log(food);
+  } else {
+    error = true;
+  }
+
+  res.render("pages/admin/main", {
+    pageName: "foodDetail",
+    sectionName: "food",
+    food,
+    error,
+    pageNo: pageNo, // 보고 있는 페이지 번호
+    searchOption, searchOption, // 검색 타입
+    searchKeyword: searchKeyword // 검색 키워드
+  });
+});
+
+// 음식 생성 페이지
+router.get("/food/editor", async (req, res) => {
+  res.render("pages/admin/main", {
+    pageName: "foodEditor",
+    sectionName: "food",
+  });
+});
+
+// 음식 생성 처리
+router.post("/food/editor", async (req, res) => {
+  console.log("POST food/editor");
+  
+  res.render("pages/admin/main", {
+    pageName: "main",
+    sectionName: "food",
+  })
+});
+
 // 농사로 데이터 페이지 보여줌
 router.get("/nongsaro", async (req, res) => {
   res.render("pages/admin/main", {
-    pageName: "nongsaro"
+    pageName: "nongsaro",
+    sectionName: "nongsaro"
   });
 });
 

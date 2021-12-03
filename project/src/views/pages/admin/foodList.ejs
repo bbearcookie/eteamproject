@@ -7,6 +7,10 @@
   .food-list {
     width: 100%;
   }
+  .foot-list-table tbody tr:hover {
+    cursor: pointer;
+    background: #EEEEEE;
+  }
 </style>
 
 <!-- 음식 관리 메인 화면 -->
@@ -15,8 +19,8 @@
   <!-- 음식 리스트 -->
   <section class="card w-100" aria-label="Food List">
     <div class="card-body w-100">
-      <h4 class="mb-5">음식 목록</h4>
-      <table class="table">
+      <h4 class="mt-3 ms-3 mb-4"><b>음식 목록</b></h4>
+      <table class="table foot-list-table">
         <thead>
           <tr>
             <th style="width: 100px">음식코드</th>
@@ -26,8 +30,8 @@
         </thead>
         <tbody>
           <% foodList.map((food) => { %>
-            <tr>
-              <th><%= food.fdCntntsNo %></th>
+            <tr onclick="onClickViewDetail(this)">
+              <th class="fdCntntsNo"><%=food.fdCntntsNo%></th>
               <td><%= food.fdNm %></td>
               <td><%= food.matrlInfo %></td>
             </tr>
@@ -35,27 +39,17 @@
         </tbody>
       </table>
       
-      <article class="mt-4 d-flex justify-content-evenly">
-        <!-- 페이지네이션 바 -->
-        <%- include("partials/paginationBar.ejs") %>
-
-        <!-- 검색 버튼 -->
-        <form class="ms-5" action="/admin/food" method="get">
-          <div class="input-group">
-            <input type="hidden" id="searchOption" value="<%=searchOption%>">
-            <select name="searchOption" id="searchSelect" class="form-select">
-              <option value="fdCntntsNo">음식코드</option>
-              <option value="fdNm">음식명</option>
-              <option value="matrlInfo">재료정보</option>
-            </select>
-              <input type="search" name="searchKeyword" value="<%=searchKeyword%>" class="w-25 form-control" placeholder="검색">
-              <span class="input-group-append">
-                <button class="btn btn-outline-secondary bg-white btn-lg" type="submit">
-                  <i class="fa fa-search"></i>
-                </button>
-              </span>
-          </div>
-        </form>
+      <article class="d-flex flex-column mt-4">
+        <section class="d-flex justify-content-end mb-3">
+          <button type="button" class="btn btn-primary" onclick="onClickAddButton(this)">추가하기</button>
+        </section>
+        <section class="d-flex justify-content-evenly">
+          <!-- 페이지네이션 바 -->
+          <%- include("partials/paginationBar.ejs") %>
+  
+          <!-- 검색 버튼 -->
+          <%- include("partials/searchInput.ejs") %>
+        </section>
       </article>
     </div>
 
@@ -63,11 +57,17 @@
 </main>
 
 <script>
-  function isEmpty(str) {
-    if (typeof str == "undefined" || str == null || str == "")
-      return true;
-    else
-      return false;
+  // 음식 상세 조회 클릭시
+  async function onClickViewDetail(e) {
+    let params = getQueryParams();
+    let fdCntntsNo = e.querySelector(".fdCntntsNo").innerText;
+    window.location.href = "/admin/food/detail/" + fdCntntsNo + toQueryString(params);
+  }
+
+  // 음식 추가 버튼 클릭시
+  async function onClickAddButton(e) {
+    let params = getQueryParams();
+    window.location.href = "/admin/food/editor/" + toQueryString(params);
   }
 
   // 페이지 로드 시

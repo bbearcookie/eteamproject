@@ -10,19 +10,58 @@
       }
       main {
         min-height: 100%;
-        background-color: #EEA265;
+        background-color: #EEEEEE;
+        font-family: "Malgun Gothic";
       }
     </style>
+    <script>
+      function isEmpty(str) {
+        if (typeof str == "undefined" || str == null || str == "")
+          return true;
+        else
+          return false;
+      }
+
+      // 현재 페이지의 쿼리 파라미터를 객체 형태로 반환
+      function getQueryParams() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        return Object.fromEntries(urlSearchParams.entries());
+      }
+
+      // 쿼리값들을 문자열 형태로 변환하여 반환
+      function toQueryString(params) {
+        let queryString = "?";
+
+        for (let el of Object.entries(params)) {
+          let key = el[0];
+          let value = el[1];
+          queryString = queryString + key + "=" + value + "&";
+        }
+        
+        return queryString;
+      }
+    </script>
     <main class="d-flex">
       <%- include("partials/sidebar.ejs") %>
-      <input type="hidden" id="pageName" value="<%-pageName%>">
+      <input type="hidden" id="pageName" value="<%-pageName%>"> <!-- 페이지마다 다른 content를 보여주기 위한 변수 -->
+      <input type="hidden" id="sectionName" value="<%-sectionName%>"> <!-- 사이드바의 active속성 지정하기 위한 변수 -->
 
-      <!-- 화면에 보여줄 페이지 내용이 음식 관리이면 -->
+      <!-- 음식 목록 조회 페이지 -->
       <% if (pageName === "foodList") { %>
         <%- include("foodList.ejs") %>
       <% } %>
 
-      <!-- 화면에 보여줄 페이지 내용이 농사로 데이터 페이지이면 -->
+      <!-- 음식 상세 페이지 -->
+      <% if (pageName === "foodDetail") { %>
+        <%- include("foodDetail.ejs") %>
+      <% } %>
+
+      <!-- 음식 생성 페이지 -->
+      <% if (pageName === "foodEditor") { %>
+        <%- include("foodEditor.ejs") %>
+      <% } %>
+
+      <!-- 농사로 데이터 페이지 -->
       <% if (pageName === "nongsaro") {  %>
         <%- include("nongsaro.ejs") %>
       <% } %>

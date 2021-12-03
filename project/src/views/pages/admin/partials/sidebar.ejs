@@ -30,15 +30,15 @@
 
 <sidebar class="d-flex flex-column align-items-center sidebar">
   <article class="d-flex flex-column align-items-center py-5">
-    <h4>하루건강</h4>
+    <h4>한다</h4>
     <h4>관리자 페이지</h4>
   </article>
   <a class="link-area" value="main" href="/admin">메인 페이지</a>
   <a class="link-area" href="#">사용자 관리</a>
   <a class="link-area" href="#">식단 관리</a>
-  <a class="link-area" value="foodList" href="/admin/food">음식 관리</a>
+  <a class="link-area" value="food" href="/admin/food">음식 관리</a>
   <a class="link-area" href="#">운동 관리</a>
-  <a class="link-area" value="nongsaro" href="/admin/nongsaro">농사로 데이터</a>
+  <a class="link-area" value="nongsaro" href="/admin/nongsaro">외부 데이터 받기</a>
   <a class="link-area" href="#">로그아웃</a>
 </sidebar>
 
@@ -46,8 +46,8 @@
   window.addEventListener("load", onLoad, true);
 
   function onLoad() {
-    let pageName = document.querySelector("#pageName").value;
+    let sectionName = document.querySelector("#sectionName").value;
 
-    document.querySelector(`.link-area[value='${pageName}']`).classList.add("active");
+    document.querySelector(`.link-area[value='${sectionName}']`).classList.add("active");
   }
 </script>

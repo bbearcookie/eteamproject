@@ -146,8 +146,8 @@ router.get("/foodImage/:index", async (req, res) => {
   let result = {};
 
   try {
-    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/114/89326_MF_ATTACH_01_TMB.jpg", "public/image/food/normal", food.rtnStreFileNm);
-    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/114/89326_MF_ATTACH_01_TMB.jpg", "public/image/food/thumbnail", food.rtnThumbFileNm);
+    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/809/49494_MF_ATTACH_01.jpg", "public/image/food/normal", food.rtnStreFileNm);
+    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/809/49494_MF_ATTACH_01.jpg", "public/image/food/thumbnail", food.rtnThumbFileNm);
     result.message = `${index}. ${food.rtnStreFileNm} 다운로드 완료`;
   } catch (err) {
     result.error = err.toString();

@@ -1,0 +1,125 @@
+<style>
+  .main {
+    flex-basis: 100%;
+    flex-shrink: 1;
+    flex-grow: 0;
+  }
+  .food-list {
+    width: 100%;
+  }
+  .foot-list-table tbody tr:hover {
+    cursor: pointer;
+    background: #EEEEEE;
+  }
+  .food-editor .divider {
+    height: 3px;
+    background: black;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .food-editor .back-button {
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+  }
+</style>
+
+<main class="main m-5">
+
+  <!-- 음식 상세 정보 -->
+  <section class="food-editor card w-100">
+    <div class="card-body w-100">
+
+      <!-- 머릿말 부분 -->
+      <section class="mt-3 ms-3 d-flex justify-content-between">
+        <h4 class=""><b>새로운 음식 추가</b></h4>
+        <a class="back-button mt-2" onclick="onClickBackButton()"><b>| 뒤로가기</b></a>
+      </section>
+      <div class="divider"></div>
+
+      <!-- 몸통 부분 -->
+      <form action="/admin/food/editor" method="post">
+        <!-- 내용 영역 -->
+        <section class="ms-3">
+          <article class="d-flex">
+            <div class="d-flex flex-column">
+              <img
+              width="250px"
+              height="250px"
+              src="/image/food/normal/?>"
+              alt="음식"
+              onerror="this.src='/image/no_image_available.jpg';">
+              <button type="button" class="btn btn-secondary">이미지 변경</button>
+            </div>
+            <div class="ms-3 mt-2 d-flex flex-column flex-grow-1">
+
+              <!-- 음식코드, 식단코드 -->
+              <div class="d-flex">
+                <div class="w-50 me-5 form-floating">
+                  <input
+                    type="text"
+                    pattern="[0-9]*"
+                    maxlength="10"
+                    title="숫자만 입력해주세요."
+                    name="fdCntntsNo"
+                    class="form-control"
+                    placeholder="음식코드"
+                    required>
+                  <label>음식 코드</label>
+                </div>
+                <div class="w-50 ms-5 form-floating">
+                  <input
+                    type="text"
+                    pattern="[0-9]*"
+                    maxlength="10"
+                    title="숫자만 입력해주세요."
+                    name="cntntsNo"
+                    class="form-control"
+                    placeholder="식단코드"
+                    required>
+                  <label>식단 코드</label>
+                </div>
+              </div>
+
+              <!-- 재료 정보 -->
+              <div class="mt-3 form-floating">
+                <input
+                  type="text"
+                  pattern="[0-9]*"
+                  name="cntntsNo"
+                  class="form-control"
+                  placeholder="재료 정보"
+                  required>
+                <label>재료 정보</label>
+              </div>
+
+              <!-- 조리 방법 -->
+              <div class="mt-3 form-floating">
+                <span class="input-group-text">조리 방법</span>
+                <textarea class="h-100 form-control" name="dietCn" rows="10"></textarea>
+              </div>
+
+            </div>
+          </article>
+        </section>
+
+        <!-- 버튼 영역 -->
+        <section class="d-flex justify-content-end" style="margin-top: 5rem;">
+          <button type="submit" class="btn btn-primary">작성하기</button>
+          <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton()">취소하기</button>
+        </section>
+      </form>
+      
+      </article>
+    </div>
+
+  </section>
+</main>
+
+<script>
+  // 뒤로가기 버튼 눌렀을때
+  function onClickBackButton() {
+    let params = getQueryParams();
+    window.location.href = "/admin/food" + toQueryString(params);
+  }
+</script>
