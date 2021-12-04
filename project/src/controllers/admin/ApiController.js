@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const fsPromises = require("fs").promises;
 const path = require("path");
-const nongsaroService = require("../services/NongsaroService");
+const nongsaroService = require("../../services/NongsaroService");
 
-const Diet = require("../models/Diet");
-const Food = require("../models/Food");
+const Diet = require("../../models/Diet");
+const Food = require("../../models/Food");
 
 const recommendDietListFileSrc = path.join(process.env.INIT_CWD, "public/rawData/recommendDietList.json");
 

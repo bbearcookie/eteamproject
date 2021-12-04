@@ -1,5 +1,5 @@
 set CURPATH=%cd%
 
-cd utils\mongodb-win32-x86_64-windows-5.0.3\bin\
+cd utils\mongodb-database-tools-windows-x86_64-100.5.1\bin
 mongodump --uri mongodb://127.0.0.1:27017 --db eteamDB --out %CURPATH%\eteamDBdump_%RANDOM%
 pause
