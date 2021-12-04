@@ -57,7 +57,7 @@
     let message = "";
 
     try {
-      const res = await axios.get("/admin/api/dietSeCode");
+      const res = await axios.get("/admin/nongsaro/dietSeCode");
 
       // 서버단에서부터 넘어온 에러가 있으면 로그에 에러 메시지 남김. 없으면 가져온 값을 남김.
       if (!res.data.error) {
@@ -83,7 +83,7 @@
     let message = "";
 
     try {
-      const res = await axios.get("/admin/api/diet");
+      const res = await axios.get("/admin/nongsaro/diet");
 
       // 서버단의 에러
       if (!res.data.error) {
@@ -134,7 +134,7 @@
     let message = "";
 
     try {
-      const res = await axios.get("/admin/api/dietDB");
+      const res = await axios.get("/admin/nongsaro/dietDB");
 
       // 서버단의 에러
       if (!res.data.error) {
@@ -185,7 +185,7 @@
     let message = "";
     try {
       // 식단 데이터 가져오기
-      let res = await axios.get("/admin/api/dietDB");
+      let res = await axios.get("/admin/nongsaro/dietDB");
 
       // 서버단의 에러
       if (!res.data.error) {
@@ -219,7 +219,7 @@
       }
 
       // 음식 데이터 가져오기
-      res = await axios.get("/admin/api/foodDB");
+      res = await axios.get("/admin/nongsaro/foodDB");
 
       // 서버단의 에러
       if (!res.data.error) {

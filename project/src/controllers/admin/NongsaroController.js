@@ -1,12 +1,19 @@
 const router = require("express").Router();
 const fsPromises = require("fs").promises;
 const path = require("path");
-const nongsaroService = require("../../services/NongsaroService");
 
+const nongsaroService = require("../../services/NongsaroService");
 const Diet = require("../../models/Diet");
 const Food = require("../../models/Food");
-
 const recommendDietListFileSrc = path.join(process.env.INIT_CWD, "public/rawData/recommendDietList.json");
+
+// 농사로 데이터 페이지 보여줌
+router.get("/", async (req, res) => {
+  res.render("admin/main.ejs", {
+    pageName: "nongsaro",
+    sectionName: "nongsaro"
+  });
+});
 
 // 농사로API에 있는 식단 분류 코드를 모두 가져옴.
 router.get("/dietSeCode", async (req, res) => {

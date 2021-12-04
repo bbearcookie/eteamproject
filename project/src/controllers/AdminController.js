@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const apiController = require("./admin/ApiController");
+const nongsaroController = require("./admin/NongsaroController");
 const dietController = require("./admin/DietController");
 const foodController = require("./admin/FoodController");
 const adminService = require("../services/AdminService");
@@ -14,7 +14,7 @@ router.use("/", async (req, res, next) => {
 });
 
 // /admin 하위 기능들
-router.use("/api", apiController);
+router.use("/nongsaro", nongsaroController);
 router.use("/diet", dietController);
 router.use("/food", foodController);
 
@@ -23,14 +23,6 @@ router.get("/", async (req, res) => {
   res.render("admin/main.ejs", {
     pageName: "main",
     sectionName: "main"
-  });
-});
-
-// 농사로 데이터 페이지 보여줌
-router.get("/nongsaro", async (req, res) => {
-  res.render("admin/main.ejs", {
-    pageName: "nongsaro",
-    sectionName: "nongsaro"
   });
 });
 

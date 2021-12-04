@@ -27,7 +27,7 @@
       console.log(dietSeCodeList[index]);
 
       try {
-        const res = await axios.post(`/admin/api/dietSeCode/${index}`, {
+        const res = await axios.post(`/admin/nongsaro/dietSeCode/${index}`, {
           dietSeCodeList,
         });
         
@@ -67,7 +67,7 @@
       }
 
       try {
-        const res = await axios.post(`/admin/api/diet/${index}`, {
+        const res = await axios.post(`/admin/nongsaro/diet/${index}`, {
           diet: diet
         });
 
@@ -107,7 +107,7 @@
       }
 
       try {
-        const res = await axios.post(`/admin/api/food/${index}`, {
+        const res = await axios.post(`/admin/nongsaro/food/${index}`, {
           diet: diet
         });
 
@@ -130,7 +130,7 @@
 
     // 마지막으로 여과되지 않은 열량 영양성분이 0인 데이터를 삭제 처리
     try {
-      const res = await axios.delete(`/admin/api/food`);
+      const res = await axios.delete(`/admin/nongsaro/food`);
 
       // 서버단 에러
       if (!res.data.error) {
@@ -164,7 +164,7 @@
       }
 
       try {
-        const res = await axios.get(`/admin/api/dietImage/${index}`, {
+        const res = await axios.get(`/admin/nongsaro/dietImage/${index}`, {
           params: {
             diet
           }
@@ -207,7 +207,7 @@
       }
 
       try {
-        const res = await axios.get(`/admin/api/foodImage/${index}`, {
+        const res = await axios.get(`/admin/nongsaro/foodImage/${index}`, {
           params: {
             food
           }
