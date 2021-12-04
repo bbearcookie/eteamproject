@@ -70,5 +70,12 @@
     <script src="/plugin/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"></script> <!-- 부트스트랩 js파일-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- ajax 요청을 위한 axios -->
     <script src="https://kit.fontawesome.com/8f09a07a77.js" crossorigin="anonymous"></script> <!-- 각종 아이콘을 제공해주는 font-awesome -->
+    <script>
+      // Bootstrap tooltip 설정
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      });
+    </script>
   </body>
 </html>

@@ -13,11 +13,6 @@ router.use("/", async (req, res, next) => {
   next();
 });
 
-// /admin 하위 기능들
-router.use("/nongsaro", nongsaroController);
-router.use("/diet", dietController);
-router.use("/food", foodController);
-
 // 관리자 메인 페이지 보여줌
 router.get("/", async (req, res) => {
   res.render("admin/main.ejs", {
@@ -25,5 +20,10 @@ router.get("/", async (req, res) => {
     sectionName: "main"
   });
 });
+
+// /admin 하위 기능들
+router.use("/nongsaro", nongsaroController);
+router.use("/diet", dietController);
+router.use("/food", foodController);
 
 module.exports = router;

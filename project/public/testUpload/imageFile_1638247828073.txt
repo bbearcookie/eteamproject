@@ -1,8 +1,0 @@
-mainCategoryList(메인카테고리 리스트)
-http://api.nongsaro.go.kr/service/recomendDiet/mainCategoryList?apiKey=20211124WPRRR1NBZUNF3Z1IPGDWQ
-
-recomendDietList(식단 목록)
-http://api.nongsaro.go.kr/service/recomendDiet/recomendDietList?apiKey=20211124WPRRR1NBZUNF3Z1IPGDWQ&dietSeCode=254001
-
-recomendDietDtl(식단 상세)
-http://api.nongsaro.go.kr/service/recomendDiet/recomendDietDtl?apiKey=20211124WPRRR1NBZUNF3Z1IPGDWQ&cntntsNo=89326
