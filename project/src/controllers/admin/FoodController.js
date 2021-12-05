@@ -19,23 +19,25 @@ function getExtName(mimeType) {
   return "";
 }
 
+// 이미지 파일의 디렉터리 경로
+let imgDirectory = path.join(process.env.INIT_CWD, "public/image/food/normal/");
+
 // multer는 클라이언트로부터 넘어오는 multipart/form-data 형식을 파싱할 수 있다.
 const storage = multer.diskStorage({
   // 파일이 저장될 폴더 경로
   destination: async function (req, file, cb) {
-    let directory = path.join(process.env.INIT_CWD, "public/image/food/normal/");
 
     // 폴더가 아직 없으면 폴더를 생성한다.
-    await fsPromises.access(directory, fs.constants.F_OK).catch(async () => {
+    await fsPromises.access(imgDirectory, fs.constants.F_OK).catch(async () => {
       try {
-        await fsPromises.mkdir(directory, { recursive: true });
+        await fsPromises.mkdir(imgDirectory, { recursive: true });
       } catch (err) {
         console.log(err);
       }
     });
     
     // 파일이 저장될 폴더 지정
-    cb(null, directory);
+    cb(null, imgDirectory);
   },
 
   // 저장될 파일 이름
@@ -142,5 +144,29 @@ router.use("/writer", foodWriterController.router);
 const foodEditorController = require("./FoodEditorController");
 foodEditorController.config(common);
 router.use("/editor", foodEditorController.router);
+
+// 음식 제거 처리
+router.post("/remover/:fdCntntsNo", async (req, res) => {
+  let { fdCntntsNo } = req.params;
+  
+  try {
+    let food = await Food.findOne({fdCntntsNo});
+
+    if (food) {
+      // 이미지 파일 있으면 제거
+      let imgPath = path.join(imgDirectory, food.rtnStreFileNm);
+      fsPromises.access(imgPath, fs.constants.F_OK).then(async () => {
+        await fsPromises.rm(imgPath);
+      }).catch(() => {});
+
+      await Food.findOneAndRemove({fdCntntsNo});
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  req.session.message = "음식 삭제 완료!";
+  res.redirect("/admin/food");
+});
 
 module.exports = router;

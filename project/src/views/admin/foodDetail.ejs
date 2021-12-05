@@ -69,7 +69,7 @@
       <!-- 버튼 영역 -->
       <section class="d-flex justify-content-end">
         <button href="/admin/food/editor/<%=food.fdCntntsNo%>" class="btn btn-secondary" onclick="onClickEditButton()">수정하기</a>
-        <button type="button" class="ms-3 btn btn-danger">삭제하기</button>
+        <button type="button" class="ms-3 btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal">삭제하기</button>
       </section>
       <% } %>
       
@@ -77,6 +77,25 @@
     </div>
 
   </section>
+
+  <!-- 삭제 모달 -->
+  <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">음식 삭제</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%=food.fdNm%>을(를) 정말로 삭제하시겠습니까?
+        </div>
+        <form action="/admin/food/remover/<%=food.fdCntntsNo%>" method="post" class="modal-footer">
+          <button type="submit" class="btn btn-danger">예</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
