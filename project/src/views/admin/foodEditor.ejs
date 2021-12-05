@@ -32,104 +32,87 @@
 
       <!-- 머릿말 부분 -->
       <section class="mt-3 ms-3 d-flex justify-content-between">
-        <h4 class=""><b>새로운 음식 추가</b></h4>
+        <h4 class=""><b><%=title%></b></h4>
         <a class="back-button mt-2" onclick="onClickBackButton()"><b>| 뒤로가기</b></a>
       </section>
       <div class="divider"></div>
 
       <!-- 몸통 부분 -->
-      <form id="food-form" action="/admin/food/editor" method="post" enctype="multipart/form-data">
-        <!-- 내용 영역 -->
-        <section class="ms-3">
-          <article class="d-flex">
-            <div class="d-flex flex-column">
-              <img
-                id="foodImage"
-                width="250px"
-                height="250px"
-                src="/image/food/normal/?>"
-                alt="음식"
-                onerror="this.src='/image/no_image_available.jpg';">
-              <input
-                class="d-none form-control"
-                id="imageFileInput"
-                type="file"
-                accept=".jpg, .png"
-                name="imageFile"
-                onchange="onChangeImageFile(this)">
-              <div class="mt-2" aria-label="margin"></div>
-              <button type="button" class="btn btn-secondary" onclick="onClickImageSelectButton()">이미지 변경</button>
-            </div>
-            <div class="ms-3 mt-2 d-flex flex-column flex-grow-1">
-
-              <!-- 음식코드, 식단코드 -->
-              <div class="d-flex">
-                <div class="w-50 me-5 form-floating">
-                  <input
-                    type="text"
-                    pattern="[0-9]*"
-                    maxlength="10"
-                    title="숫자만 입력해주세요."
-                    name="fdCntntsNo"
-                    value="<%=fdCntntsNo%>"
-                    class="form-control"
-                    placeholder="음식코드"
-                    required
-                    autocomplete="off">
-                  <label>음식 코드</label>
-                </div>
-                <div class="w-50 ms-5 form-floating">
-                  <input
-                    type="text"
-                    pattern="[0-9]*"
-                    maxlength="10"
-                    title="숫자만 입력해주세요."
-                    name="cntntsNo"
-                    value="<%=cntntsNo%>"
-                    class="form-control"
-                    placeholder="식단코드"
-                    required
-                    autocomplete="off">
-                  <label>식단 코드</label>
-                </div>
-              </div>
-
-              <!-- 재료 정보 -->
-              <div class="mt-3 form-floating">
+      <% if (notFoundError) { %>
+        <p>해당 음식을 찾을 수 없습니다!</p>
+      <% } else { %>
+        <input type="hidden" class="fdCntntsNo" value="<%=fdCntntsNo%>">
+        <form id="food-form" action="/admin/food/editor/<%=fdCntntsNo%>" method="post" enctype="multipart/form-data">
+          <!-- 내용 영역 -->
+          <section class="ms-3">
+            <article class="d-flex">
+              <div class="d-flex flex-column">
+                <img
+                  id="foodImage"
+                  width="250px"
+                  height="250px"
+                  src="/image/food/normal/<%=rtnStreFileNm%>"
+                  alt="음식"
+                  onerror="this.src='/image/no_image_available.jpg';">
                 <input
-                  type="text"
-                  name="matrlInfo"
-                  value="<%=matrlInfo%>"
-                  class="form-control"
-                  placeholder="재료 정보"
-                  required
-                  autocomplete="off">
-                <label>재료 정보</label>
+                  class="d-none form-control"
+                  id="imageFileInput"
+                  type="file"
+                  accept=".jpg, .png"
+                  name="imageFile"
+                  onchange="onChangeImageFile(this)">
+                <div class="mt-2" aria-label="margin"></div>
+                <button type="button" class="btn btn-secondary" onclick="onClickImageSelectButton()">이미지 변경</button>
               </div>
-
-              <!-- 조리 방법 -->
-              <div class="mt-3 form-floating">
-                <span class="input-group-text">조리 방법</span>
-                <textarea
-                  class="h-100 form-control"
-                  name="dietCn"
-                  value=""
-                  rows="15"><%=dietCn%></textarea>
+              <div class="ms-3 mt-2 d-flex flex-column flex-grow-1">
+  
+                <!-- 음식 이름 -->
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    name="fdNm"
+                    value="<%=fdNm%>"
+                    class="form-control"
+                    placeholder="음식 이름"
+                    autocomplete="off">
+                  <label>음식 이름</label>
+  
+                <!-- 재료 정보 -->
+                <div class="mt-3 form-floating">
+                  <input
+                    type="text"
+                    name="matrlInfo"
+                    value="<%=matrlInfo%>"
+                    class="form-control"
+                    placeholder="재료 정보"
+                    autocomplete="off">
+                  <label>재료 정보</label>
+                </div>
+  
+                <!-- 조리 방법 -->
+                <div class="mt-3 form-floating">
+                  <span class="input-group-text">조리 방법</span>
+                  <textarea
+                    class="h-100 form-control"
+                    name="ckngMthInfo"
+                    value=""
+                    rows="5"><%=ckngMthInfo%></textarea>
+                </div>
+  
               </div>
-
-            </div>
-          </article>
-        </section>
-
-        <section class="d-flex flex-column align-items-end" style="margin-top: 5rem;">
-          <div class="error-alert alert alert-danger" style="display: none"></div>
-          <!-- 버튼 영역 -->
-          <section class="d-flex justify-content-end">
-            <button type="button" class="ms-3 btn btn-primary" onclick="onClickSubmitButton()">작성하기</button>
-            <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton()">취소하기</button>
+            </article>
           </section>
-        </section>
-      </form>
+  
+          <section class="d-flex flex-column align-items-end" style="margin-top: 15rem;">
+            <div class="error-alert alert alert-danger" style="display: none"></div>
+            <!-- 버튼 영역 -->
+            <section class="d-flex justify-content-end">
+              <button type="submit" class="ms-3 btn btn-primary">작성하기</button>
+              <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton()">취소하기</button>
+            </section>
+          </section>
+        </form>
+      <% } %>
       
       </article>
     </div>
@@ -138,35 +121,22 @@
 </main>
 
 <script>
+  function showErrorAlert(message) {
+      let errorEl = document.querySelector(".food-editor .error-alert");
+      errorEl.style.display = "block";
+      errorEl.innerText = message;
+  }
+
   // 작성하기 버튼 클릭시
-  async function onClickSubmitButton() {
-    let fdCntntsNo = document.querySelector(`#food-form input[name="fdCntntsNo"]`).value;
-    let cntntsNo = document.querySelector(`#food-form input[name="cntntsNo"]`).value;
-
-    try {
-      const res = await axios.post("/admin/food/editor/check", {
-        fdCntntsNo,
-        cntntsNo,
-      });
-
-      // 유효성 검사 실패시 alert요소 보여줌. 성공시 폼 post 요청
-      if (res.data.error) {
-        let errorEl = document.querySelector(".food-editor .error-alert");
-        errorEl.style.display = "block";
-        errorEl.innerText = res.data.errorMessage;
-      } else {
-        document.querySelector("#food-form").submit();
-      }
-
-    } catch (err) {
-      console.log(err);
-    }
+  function onClickSubmitButton() {
+    document.querySelector("#food-form").submit();
   }
 
   // 뒤로가기 버튼 눌렀을때
   function onClickBackButton() {
     let params = getQueryParams();
-    window.location.href = "/admin/food" + toQueryString(params);
+    let fdCntntsNo = document.querySelector(".fdCntntsNo").value;
+    window.location.href = "/admin/food/detail/" + fdCntntsNo + toQueryString(params);
   }
 
   // 이미지 파일 변경 버튼 클릭시

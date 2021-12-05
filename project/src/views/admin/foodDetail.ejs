@@ -39,14 +39,14 @@
       <div class="divider"></div>
 
       <!-- 몸통 부분 -->
-      <% if (error) { %>
+      <% if (notFoundError) { %>
       <p>해당 음식을 찾을 수 없습니다!</p>
       <% } else { %>
       <!-- 내용 영역 -->
       <section class="ms-3">
         <div class="d-flex">
           <div>
-            <h5 class="mb-0"><b>음식코드: <%=food.fdCntntsNo%></b></h5>
+            <h5 class="mb-0"><b>음식코드: <span class="fdCntntsNo"><%=food.fdCntntsNo%></span></b></h5>
             <h5><b><%=food.fdNm%></b></h5>
             <img
             width="400px"
@@ -68,7 +68,7 @@
 
       <!-- 버튼 영역 -->
       <section class="d-flex justify-content-end">
-        <button type="button" class="btn btn-secondary">수정하기</button>
+        <button href="/admin/food/editor/<%=food.fdCntntsNo%>" class="btn btn-secondary" onclick="onClickEditButton()">수정하기</a>
         <button type="button" class="ms-3 btn btn-danger">삭제하기</button>
       </section>
       <% } %>
@@ -80,6 +80,13 @@
 </main>
 
 <script>
+  // 수정하기 버튼 눌렀을때
+  function onClickEditButton() {
+    let params = getQueryParams();
+    let fdCntntsNo = document.querySelector(".fdCntntsNo").innerText;
+    window.location.href = "/admin/food/editor/" + fdCntntsNo + toQueryString(params);
+  }
+
   // 뒤로가기 버튼 눌렀을때
   function onClickBackButton() {
     let params = getQueryParams();

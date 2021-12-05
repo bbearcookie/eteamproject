@@ -20,7 +20,6 @@ function getExtName(mimeType) {
 }
 
 // multer는 클라이언트로부터 넘어오는 multipart/form-data 형식을 파싱할 수 있다.
-// 즉, 파일 데이터를 받을 수 있다.
 const storage = multer.diskStorage({
   // 파일이 저장될 폴더 경로
   destination: async function (req, file, cb) {
@@ -48,7 +47,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-
+// 하위 컨트롤러에서도 사용하는 공통 부분을 객체로 줌.
+let common = {
+  // 파일의 mimeType에 따른 확장자를 반환하는 함수
+  getExtName: getExtName,
+  upload: upload
+}
 
 // 음식 목록 페이지
 router.get("/", async (req, res) => {
@@ -89,102 +93,54 @@ router.get("/", async (req, res) => {
   let maxContent = minContent + 10;
 
   // 클라이언트에 보여줄 메시지가 있으면 처리
-  if (req.session.toastMessage) {
-    message = req.session.toastMessage;
-    req.session.toastMessage = null;
+  if (req.session.message) {
+    message = req.session.message;
+    req.session.message = null;
   }
 
   res.render("admin/main.ejs", {
     pageName: "foodList",
     sectionName: "food",
+    message, // 화면에 보여줄 메시지
     foodList: foodList.slice(minContent, maxContent), // 보여줄 음식 목록
     numOfListItem: numOfFood, // 보여줄 음식 목록 갯수
     pageNo, // 보고 있는 페이지 번호
     searchOption, // 검색 타입
     searchKeyword, // 검색 키워드,
-    message // 화면에 보여줄 toast 메시지
   });
 });
 
 // 음식 상세 페이지
 router.get("/detail/:fdCntntsNo", async (req, res) => {
   let { pageNo, searchOption, searchKeyword } = req.query;
-
   let { fdCntntsNo } = req.params;
   fdCntntsNo = parseInt(fdCntntsNo);
 
   let food = await Food.findOne({fdCntntsNo: fdCntntsNo});
-  let error = false;
-  if (food) {
-    // console.log(food);
-  } else {
-    error = true;
+  let notFoundError = false;
+  if (!food) {
+    notFoundError = true;
   }
 
   res.render("admin/main.ejs", {
     pageName: "foodDetail",
     sectionName: "food",
-    food,
-    error,
     pageNo: pageNo, // 보고 있는 페이지 번호
     searchOption, searchOption, // 검색 타입
-    searchKeyword: searchKeyword // 검색 키워드
+    searchKeyword: searchKeyword, // 검색 키워드
+    notFoundError,
+    food,
   });
 });
 
 // 음식 생성 페이지
-router.get("/editor", async (req, res) => {
-  res.render("admin/main.ejs", {
-    pageName: "foodEditor",
-    sectionName: "food",
-    errorMessage: "",
-    fdCntntsNo: "",
-    cntntsNo: "",
-    matrlInfo: "",
-    dietCn: ""
-  });
-});
+const foodWriterController = require("./FoodWriterController");
+foodWriterController.config(common);
+router.use("/writer", foodWriterController.router);
 
-// 음식 생성 처리 전에 ajax로 유효성 검사
-router.post("/editor/check", async (req, res) => {
-  const { fdCntntsNo, cntntsNo } = req.body;
-  let error = false;
-  let errorMessage = "";
-
-  // 해당 음식코드가 이미 있으면 다시 입력 받아야함.
-  let food = await Food.findOne({fdCntntsNo});
-  if (food) {
-    error = true;
-    errorMessage = "이미 있는 음식코드입니다.";
-  }
-
-  // 해당 식단코드로 저장된 식단이 없다면 사용자로부터 입력 다시 받아야 함.
-  let diet = await Diet.findOne({cntntsNo});
-  if (!diet) {
-    error = true;
-    errorMessage = "이 음식이 포함되려는 식단코드가 아직 없습니다.";
-  }
-
-  res.json({
-    error,
-    errorMessage
-  });
-});
-
-// 음식 생성 처리
-router.post("/editor", upload.single("imageFile"), async (req, res) => {
-  const { fdCntntsNo, cntntsNo, matrlInfo, dietCn } = req.body;
-  const imgFile = req.file;
-  console.log("POST /food/editor");
-
-  // 성공적으로 DB에 저장됐으면 이미지 파일명 변경
-  if (imgFile) {
-    await fsPromises.rename(imgFile.path, path.join(imgFile.destination, fdCntntsNo + "." + getExtName(imgFile.mimetype)));
-  }
-
-  // 생성 성공했으면 foodList 페이지 보여줌.
-  req.session.toastMessage = "식단 생성 완료!";
-  res.redirect("/admin/food");
-});
+// 음식 수정 페이지
+const foodEditorController = require("./FoodEditorController");
+foodEditorController.config(common);
+router.use("/editor", foodEditorController.router);
 
 module.exports = router;

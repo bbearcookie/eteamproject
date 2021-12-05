@@ -57,6 +57,11 @@
       <% } %>
 
       <!-- 음식 생성 페이지 -->
+      <% if (pageName === "foodWriter") { %>
+        <%- include("foodWriter.ejs") %>
+      <% } %>
+
+      <!-- 음식 수정 페이지 -->
       <% if (pageName === "foodEditor") { %>
         <%- include("foodEditor.ejs") %>
       <% } %>

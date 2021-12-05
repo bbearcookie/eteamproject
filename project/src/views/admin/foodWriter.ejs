@@ -1,0 +1,207 @@
+<style>
+  .main {
+    flex-basis: 100%;
+    flex-shrink: 1;
+    flex-grow: 0;
+  }
+  .food-list {
+    width: 100%;
+  }
+  .foot-list-table tbody tr:hover {
+    cursor: pointer;
+    background: #EEEEEE;
+  }
+  .food-editor .divider {
+    height: 3px;
+    background: black;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .food-editor .back-button {
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+  }
+</style>
+
+<main class="main m-5">
+
+  <!-- 음식 상세 정보 -->
+  <section class="food-editor card w-100">
+    <div class="card-body w-100">
+
+      <!-- 머릿말 부분 -->
+      <section class="mt-3 ms-3 d-flex justify-content-between">
+        <h4 class=""><b>새로운 음식 작성</b></h4>
+        <a class="back-button mt-2" onclick="onClickBackButton()"><b>| 뒤로가기</b></a>
+      </section>
+      <div class="divider"></div>
+
+      <!-- 몸통 부분 -->
+      <form id="food-form" action="/admin/food/writer" method="post" enctype="multipart/form-data">
+        <!-- 내용 영역 -->
+        <section class="ms-3">
+          <article class="d-flex">
+            <div class="d-flex flex-column">
+              <img
+                id="foodImage"
+                width="250px"
+                height="250px"
+                src="/image/food/normal/?>"
+                alt="음식"
+                onerror="this.src='/image/no_image_available.jpg';">
+              <input
+                class="d-none form-control"
+                id="imageFileInput"
+                type="file"
+                accept=".jpg, .png"
+                name="imageFile"
+                onchange="onChangeImageFile(this)">
+              <div class="mt-2" aria-label="margin"></div>
+              <button type="button" class="btn btn-secondary" onclick="onClickImageSelectButton()">이미지 변경</button>
+            </div>
+            <div class="ms-3 mt-2 d-flex flex-column flex-grow-1">
+
+              <!-- 음식코드, 식단코드 -->
+              <div class="d-flex">
+                <div class="w-50 me-5 form-floating">
+                  <input
+                    type="text"
+                    maxlength="10"
+                    title="숫자만 입력해주세요."
+                    name="fdCntntsNo"
+                    class="form-control"
+                    placeholder="음식코드"
+                    required
+                    autocomplete="off">
+                  <label>음식 코드</label>
+                </div>
+                <div class="w-50 ms-5 form-floating">
+                  <input
+                    type="text"
+                    maxlength="10"
+                    title="숫자만 입력해주세요."
+                    name="cntntsNo"
+                    class="form-control"
+                    placeholder="식단코드"
+                    required
+                    autocomplete="off">
+                  <label>식단 코드</label>
+                </div>
+              </div>
+
+              <!-- 음식 이름 -->
+              <div class="mt-3 form-floating">
+                <input
+                  type="text"
+                  name="fdNm"
+                  class="form-control"
+                  placeholder="음식 이름"
+                  autocomplete="off">
+                <label>음식 이름</label>
+
+              <!-- 재료 정보 -->
+              <div class="mt-3 form-floating">
+                <input
+                  type="text"
+                  name="matrlInfo"
+                  class="form-control"
+                  placeholder="재료 정보"
+                  required
+                  autocomplete="off">
+                <label>재료 정보</label>
+              </div>
+
+              <!-- 조리 방법 -->
+              <div class="mt-3 form-floating">
+                <span class="input-group-text">조리 방법</span>
+                <textarea
+                  class="h-100 form-control"
+                  name="ckngMthInfo"
+                  value=""
+                  rows="5"></textarea>
+              </div>
+
+            </div>
+          </article>
+        </section>
+
+        <section class="d-flex flex-column align-items-end" style="margin-top: 15rem;">
+          <div class="error-alert alert alert-danger" style="display: none"></div>
+          <!-- 버튼 영역 -->
+          <section class="d-flex justify-content-end">
+            <button type="button" class="ms-3 btn btn-primary" onclick="onClickSubmitButton()">작성하기</button>
+            <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton()">취소하기</button>
+          </section>
+        </section>
+      </form>
+      
+      </article>
+    </div>
+
+  </section>
+</main>
+
+<script>
+  function showErrorAlert(message) {
+      let errorEl = document.querySelector(".food-editor .error-alert");
+      errorEl.style.display = "block";
+      errorEl.innerText = message;
+  }
+
+  // 작성하기 버튼 클릭시
+  async function onClickSubmitButton() {
+    let fdCntntsNo = document.querySelector(`#food-form input[name="fdCntntsNo"]`).value;
+    let cntntsNo = document.querySelector(`#food-form input[name="cntntsNo"]`).value;
+
+    // 클라이언트단 유효성 검사
+    let regex = /[^0-9]/g; // 숫자가 아닌 값 추출
+    if (isEmpty(fdCntntsNo)) {
+      return showErrorAlert("음식 코드를 입력해주세요.");
+    }
+    if (isEmpty(cntntsNo)) {
+      return showErrorAlert("식단 코드를 입력해주세요.");
+    }
+    if (!isEmpty(fdCntntsNo.match(regex))) {
+      return showErrorAlert("음식 코드는 숫자만 입력가능합니다.");
+    }
+    if (!isEmpty(cntntsNo.match(regex))) {
+      return showErrorAlert("식단 코드는 숫자만 입력가능합니다.");
+    }
+
+    try {
+      const res = await axios.post("/admin/food/writer/check", {
+        fdCntntsNo,
+        cntntsNo,
+      });
+
+      // 유효성 검사 실패시 alert요소 보여줌. 성공시 폼 post 요청
+      if (res.data.checkErrorMessage) {
+        let errorEl = document.querySelector(".food-editor .error-alert");
+        errorEl.style.display = "block";
+        errorEl.innerText = res.data.checkErrorMessage;
+      } else {
+        document.querySelector("#food-form").submit();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  // 뒤로가기 버튼 눌렀을때
+  function onClickBackButton() {
+    let params = getQueryParams();
+    window.location.href = "/admin/food" + toQueryString(params);
+  }
+
+  // 이미지 파일 변경 버튼 클릭시
+  function onClickImageSelectButton() {
+    document.querySelector("#imageFileInput").click();
+  }
+
+  // 이미지 파일 변경시
+  function onChangeImageFile(e) {
+    let imgEl = document.querySelector("#foodImage");
+    imgEl.setAttribute("src", window.URL.createObjectURL(e.files[0]));
+  }
+</script>
