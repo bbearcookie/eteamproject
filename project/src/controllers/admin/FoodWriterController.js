@@ -9,12 +9,21 @@ const Diet = require("../../models/Diet");
 module.exports.config = function (common) {
   // 음식 생성 페이지
   router.get("/", async (req, res) => {
+    let { previousPage } = req.query;
+    let cntntsNo = "";
+
+    // 식단 상세에서 음식 추가 눌렀을 때, 이전 페이지 정보에서 식단 코드 부분만 추출
+    if (previousPage) {
+      cntntsNo = previousPage.split("/").slice(-1);
+    }
+    
     res.render("admin/main.ejs", {
       pageName: "foodWriter",
       sectionName: "food",
+      previousPage,
       checkErrorMessage: "",
       fdCntntsNo: "",
-      cntntsNo: "",
+      cntntsNo,
       fdNm: "",
       matrlInfo: "",
       ckngMthInfo: ""
@@ -45,7 +54,7 @@ module.exports.config = function (common) {
 
   // 음식 생성 처리
   router.post("/", common.upload.single("imageFile"), async (req, res) => {
-    const { fdCntntsNo, cntntsNo, fdNm, matrlInfo, ckngMthInfo } = req.body;
+    const { fdCntntsNo, cntntsNo, fdNm, matrlInfo, ckngMthInfo, previousPage } = req.body;
     const imgFile = req.file;
     let destFileName = "";
 
@@ -73,6 +82,13 @@ module.exports.config = function (common) {
     } catch (err) {
       console.log(err);
     }
+
+    if (previousPage) {
+      if (previousPage.includes("/admin/diet/detail")) {
+        return res.redirect(previousPage);
+      }
+    }
+    
 
     res.redirect("/admin/food");
   });

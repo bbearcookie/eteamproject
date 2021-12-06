@@ -66,10 +66,9 @@ router.get("/", async (req, res) => {
   if (req.query.pageNo) pageNo = parseInt(req.query.pageNo);
   else pageNo = 1;
 
-  // 음식 코드를 가지고 오름차순 정렬
-  let findExpr = {};
 
   // 검색 키워드가 있으면 검색 조건 처리
+  let findExpr = {};
   if (searchKeyword) {
     //  음식명과 재료정보는 문자열 포함하는지 비교.
     if (searchOption === "fdNm" || searchOption === "matrlInfo") {

@@ -1,0 +1,132 @@
+<style>
+  .main {
+    flex-basis: 100%;
+    flex-shrink: 1;
+    flex-grow: 0;
+  }
+  .food-list {
+    width: 100%;
+  }
+  .foot-list-table tbody tr:hover {
+    cursor: pointer;
+    background: #EEEEEE;
+  }
+  .diet-detail .divider {
+    height: 3px;
+    background: black;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .diet-detail .back-button {
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+  }
+</style>
+
+<main class="main m-5">
+
+  <!-- 음식 상세 정보 -->
+  <section class="diet-detail card w-100" aria-label="Food Detail">
+    
+    <div class="card-body w-100">
+
+      <!-- 머릿말 부분 -->
+      <section class="mt-3 ms-3 d-flex justify-content-between">
+        <h4 class=""><b>식단 상세</b></h4>
+        <a class="back-button mt-2" onclick="onClickBackButton('/admin/diet')"><b>| 뒤로가기</b></a>
+      </section>
+      <div class="divider"></div>
+
+      <!-- 몸통 부분 -->
+      <% if (notFoundError) { %>
+      <p>해당 음식을 찾을 수 없습니다!</p>
+      <% } else { %>
+      <!-- 내용 영역 -->
+      <section class="ms-3">
+        <div class="d-flex">
+          <div style="width: 400px;">
+            <h5 class="mb-0"><b>식단코드: <span class="cntntsNo"><%=diet.cntntsNo%></span></b></h5>
+            <h5><b><%=diet.dietNm%></b></h5>
+            <img
+            width="400px"
+            height="400px"
+            src="/image/diet/normal/<%=diet.rtnStreFileNm%>"
+            alt="음식"
+            onerror="this.src='/image/no_image_available.jpg';">
+          </div>
+          <div class="ms-4 d-flex flex-column" style="margin-top: 60px">
+            <p class="mb-0"><b>상세 정보</b></p>
+            <p><%=diet.dietCn%></p>
+            <p class="mb-0"><b>영양 성분</b></p>
+            <p class="mb-0"><b>열량:</b> <%=diet.clriInfo%>kcal</p>
+            <p class="mb-0"><b>당질:</b> <%=diet.crbhInfo%>g</p>
+            <p class="mb-0"><b>단백질:</b> <%=diet.protInfo%>g</p>
+            <p class="mb-0"><b>지질:</b> <%=diet.ntrfsInfo%>g</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 버튼 영역 -->
+      <section class="d-flex justify-content-end">
+        <button href="/admin/food/editor/<%=diet.cntntsNo%>" class="btn btn-secondary" onclick="onClickEditButton()">수정하기</a>
+        <button type="button" class="ms-3 btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal">삭제하기</button>
+      </section>
+      <% } %>
+    </div>
+
+  </section>
+
+  <!-- 식단이 포함하는 음식들 -->
+    <section class="mt-5 diet-detail card w-100" aria-label="Food Detail">
+    
+      <div class="card-body w-100">
+        <!-- 머릿말 부분 -->
+        <section class="mt-3 ms-3 d-flex justify-content-between">
+          <h4 class=""><b>식단이 포함하는 음식들</b></h4>
+          <button class="btn btn-primary" onclick="onClickAddButton()">추가하기</a>
+        </section>
+        <div class="divider"></div>
+        
+        <% foodList.map((food) => { %>
+        <!-- 내용 영역 -->
+        <section class="ms-3 mb-5">
+          <div class="d-flex">
+            <div style="width: 400px;">
+              <h5 class="mb-0"><b>음식코드: <span class="fdCntntsNo"><%=food.fdCntntsNo%></span></b></h5>
+              <h5><b><%=food.fdNm%></b></h5>
+              <img
+              width="400px"
+              height="400px"
+              src="/image/food/normal/<%=food.rtnStreFileNm%>"
+              alt="음식"
+              onerror="this.src='/image/no_image_available.jpg';">
+            </div>
+            <div class="ms-4 d-flex flex-column" style="margin-top: 4rem">
+              <p class="mb-0"><b>재료 정보</b></p>
+              <p><%=food.matrlInfo%></p>
+              <p class="mb-0"><b>조리 방법 정보</b></p>
+              <% for (ckngMth of food.ckngMthInfo.split("\n")) { %>
+                <p class="mb-0"><%=ckngMth%></p>
+              <% } %>
+            </div>
+          </div>
+        </section>
+        <% }) %>
+      </div>
+  
+    </section>
+
+</main>
+
+<script>
+
+  // 식단에 새로운 음식 추가하기 버튼 눌렀을때
+  function onClickAddButton() {
+    let params = getQueryParams();
+    let cntntsNo = document.querySelector(".cntntsNo").innerText;
+
+    params["previousPage"] = `/admin/diet/detail/${cntntsNo}`;
+    window.location.href = "/admin/food/writer/" + toQueryString(params);
+  }
+</script>

@@ -11,11 +11,6 @@
     cursor: pointer;
     background: #EEEEEE;
   }
-  .toast-area {
-    position: fixed;
-    top: 0;
-    left: 50%;
-  }
 </style>
 
 <!-- 음식 관리 메인 화면 -->
@@ -52,10 +47,10 @@
         </section>
         <section class="d-flex justify-content-evenly">
           <!-- 페이지네이션 바 -->
-          <%- include("partials/paginationBar.ejs") %>
+          <%- include("../partials/paginationBar.ejs") %>
   
           <!-- 검색 버튼 -->
-          <%- include("partials/searchInput.ejs") %>
+          <%- include("../partials/searchInput.ejs") %>
         </section>
       </article>
     </div>
@@ -81,13 +76,7 @@
   // 페이지 로드 시
   window.addEventListener("load", onLoad, true);
   function onLoad() {
-    let searchOption = document.querySelector("#searchOption").value;
-
-    // 쿼리 스트링에 음식 검색 타입 적혀있다면 해당 option 선택 활성화
-    if (!isEmpty(searchOption)) {
-      document.querySelector(`#searchSelect option[value='${searchOption}']`).setAttribute("selected", "true");
-    }
-
+    
     // 메시지가 있다면 보여줌
     let messageEl = document.querySelector(".food-main .success-alert");
     console.log(messageEl);

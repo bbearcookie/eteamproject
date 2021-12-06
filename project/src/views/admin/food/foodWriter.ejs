@@ -4,13 +4,6 @@
     flex-shrink: 1;
     flex-grow: 0;
   }
-  .food-list {
-    width: 100%;
-  }
-  .foot-list-table tbody tr:hover {
-    cursor: pointer;
-    background: #EEEEEE;
-  }
   .food-editor .divider {
     height: 3px;
     background: black;
@@ -33,12 +26,13 @@
       <!-- 머릿말 부분 -->
       <section class="mt-3 ms-3 d-flex justify-content-between">
         <h4 class=""><b>새로운 음식 작성</b></h4>
-        <a class="back-button mt-2" onclick="onClickBackButton()"><b>| 뒤로가기</b></a>
+        <a class="back-button mt-2" onclick="onClickBackButton('/admin/food')"><b>| 뒤로가기</b></a>
       </section>
       <div class="divider"></div>
 
       <!-- 몸통 부분 -->
       <form id="food-form" action="/admin/food/writer" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="previousPage" value="<%=previousPage%>">
         <!-- 내용 영역 -->
         <section class="ms-3">
           <article class="d-flex">
@@ -82,6 +76,7 @@
                     maxlength="10"
                     title="숫자만 입력해주세요."
                     name="cntntsNo"
+                    value="<%=cntntsNo%>"
                     class="form-control"
                     placeholder="식단코드"
                     required
@@ -99,6 +94,7 @@
                   placeholder="음식 이름"
                   autocomplete="off">
                 <label>음식 이름</label>
+              </div>
 
               <!-- 재료 정보 -->
               <div class="mt-3 form-floating">
@@ -119,19 +115,19 @@
                   class="h-100 form-control"
                   name="ckngMthInfo"
                   value=""
-                  rows="5"></textarea>
+                  rows="10"></textarea>
               </div>
 
             </div>
           </article>
         </section>
 
-        <section class="d-flex flex-column align-items-end" style="margin-top: 15rem;">
+        <section class="d-flex flex-column align-items-end" style="margin-top: 5rem;">
           <div class="error-alert alert alert-danger" style="display: none"></div>
           <!-- 버튼 영역 -->
           <section class="d-flex justify-content-end">
             <button type="button" class="ms-3 btn btn-primary" onclick="onClickSubmitButton()">작성하기</button>
-            <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton()">취소하기</button>
+            <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton('/admin/food')">취소하기</button>
           </section>
         </section>
       </form>
@@ -186,12 +182,6 @@
     } catch (err) {
       console.log(err);
     }
-  }
-
-  // 뒤로가기 버튼 눌렀을때
-  function onClickBackButton() {
-    let params = getQueryParams();
-    window.location.href = "/admin/food" + toQueryString(params);
   }
 
   // 이미지 파일 변경 버튼 클릭시
