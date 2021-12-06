@@ -3,8 +3,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
-const Food = require("../../models/Food");
-const Diet = require("../../models/Diet");
+const Food = require("../../../models/Food");
+const Diet = require("../../../models/Diet");
 
 // 파일의 mimeType에 따른 확장자를 반환하는 함수
 function getExtName(mimeType) {
@@ -20,7 +20,7 @@ function getExtName(mimeType) {
 }
 
 // 이미지 파일의 디렉터리 경로
-let imgDirectory = path.join(process.env.INIT_CWD, "public/image/diet/normal/");
+let imgDirectory = path.join(process.env.INIT_CWD, "public/image/food/normal/");
 
 // multer는 클라이언트로부터 넘어오는 multipart/form-data 형식을 파싱할 수 있다.
 const storage = multer.diskStorage({
@@ -44,7 +44,6 @@ const storage = multer.diskStorage({
   filename: function(req, file, cb) {
     // 파일 형식에 따라서 확장자를 붙여준다.
     let mimeType = getExtName(file.mimetype);
-
     cb(null, file.fieldname + "_" + req.user.username + "." + mimeType);
   }
 });
@@ -57,27 +56,27 @@ let common = {
   upload: upload
 }
 
-// 식단 목록 보여줌
+// 음식 목록 페이지
 router.get("/", async (req, res) => {
   let { searchOption, searchKeyword } = req.query;
   let pageNo;
   let message = "";
   
-
   // 현재페이지가 없으면 1로 지정
   if (req.query.pageNo) pageNo = parseInt(req.query.pageNo);
   else pageNo = 1;
+
 
   // 검색 키워드가 있으면 검색 조건 처리
   let findExpr = {};
   if (searchKeyword) {
     //  음식명과 재료정보는 문자열 포함하는지 비교.
-    if (searchOption === "dietNm" || searchOption === "dietCn") {
+    if (searchOption === "fdNm" || searchOption === "matrlInfo") {
       findExpr[searchOption] = { $regex: `.*${searchKeyword}.*` };
     }
 
     // 식단코드는 정확히 일치하는지 비교. 키워드가 숫자가 아니면 아무것도 반환안함.
-    if (searchOption === "cntntsNo") {
+    if (searchOption === "fdCntntsNo") {
       let numberedKeyword = /^\d+$/.exec(searchKeyword);
       if (numberedKeyword) {
         findExpr[searchOption] = { $eq: parseInt(numberedKeyword[0]) };
@@ -87,9 +86,10 @@ router.get("/", async (req, res) => {
     }
   }
 
-  let dietList = await Diet.find(findExpr).sort({cntntsNo: 1}).lean();
+  let foodList = await Food.find(findExpr).sort({fdCntntsNo: 1}).lean();
 
   // 페이지마다 음식을 10개씩 보여준다.
+  let numOfFood = foodList.length;
   let minContent = (pageNo - 1) * 10;
   let maxContent = minContent + 10;
 
@@ -99,99 +99,80 @@ router.get("/", async (req, res) => {
     req.session.message = null;
   }
 
-  res.render("admin/main", {
-    pageName: "dietList",
-    sectionName: "diet",
-    message,
-    dietList: dietList.slice(minContent, maxContent), // 보여줄 음식 목록
-    numOfListItem: dietList.length, // 보여줄 음식 목록 갯수
+  res.render("admin/main.ejs", {
+    pageName: "foodList",
+    sectionName: "food",
+    message, // 화면에 보여줄 메시지
+    foodList: foodList.slice(minContent, maxContent), // 보여줄 음식 목록
+    numOfListItem: numOfFood, // 보여줄 음식 목록 갯수
     pageNo, // 보고 있는 페이지 번호
     searchOption, // 검색 타입
     searchKeyword, // 검색 키워드,
   });
 });
 
-// 식단 상세 정보 보여줌
-router.get("/detail/:cntntsNo", async (req, res) => {
+// 음식 상세 페이지
+router.get("/detail/:fdCntntsNo", async (req, res) => {
   let { pageNo, searchOption, searchKeyword } = req.query;
-  let { cntntsNo } = req.params;
+  let { fdCntntsNo } = req.params;
+  fdCntntsNo = parseInt(fdCntntsNo);
 
-  let diet = await Diet.findOne({cntntsNo});
+  let food = await Food.findOne({fdCntntsNo: fdCntntsNo});
   let notFoundError = false;
-  if (!diet) {
+  if (!food) {
     notFoundError = true;
   }
 
-  let foodList = await Food.find({cntntsNo});
-
-  res.render("admin/main", {
-    pageName: "dietDetail",
-    sectionName: "diet",
-    message: "",
-    pageNo, // 보고 있는 페이지 번호
-    searchOption, // 검색 타입
-    searchKeyword, // 검색 키워드,
+  res.render("admin/main.ejs", {
+    pageName: "foodDetail",
+    sectionName: "food",
+    pageNo: pageNo, // 보고 있는 페이지 번호
+    searchOption, searchOption, // 검색 타입
+    searchKeyword: searchKeyword, // 검색 키워드
     notFoundError,
-    diet,
-    foodList
+    food,
   });
 });
 
-// 식단 생성 페이지
-const dietWriterController = require("./DietWriterController");
-dietWriterController.config(common);
-router.use("/writer", dietWriterController.router);
+// 음식 생성 페이지
+const foodWriterController = require("./FoodWriterController");
+foodWriterController.config(common);
+router.use("/writer", foodWriterController.router);
 
-// 식단 수정 페이지
-const dietEditorController = require("./DietEditorController");
-dietEditorController.config(common);
-router.use("/editor", dietEditorController.router);
+// 음식 수정 페이지
+const foodEditorController = require("./FoodEditorController");
+foodEditorController.config(common);
+router.use("/editor", foodEditorController.router);
 
-// 식단 생성 요청
-router.post("/editor", upload.single("imageFile"), async (req, res) => {
-  console.log(req.body);
-  res.send("Haha");
-});
-
-// 식단 삭제 가능 여부 체크
-router.post("/check/remover", async (req, res) => {
-  let { cntntsNo } = req.body;
-  let checkErrorMessage = "";
-
-  // 식단에 포함되는 하위 음식이 있으면 식단 삭제 불가능.
-  let food = await Food.findOne({cntntsNo});
-  if (food) {
-    checkErrorMessage = "식단에 포함되는 하위 음식을 먼저 모두 삭제해주세요.";
-  }
-
-  res.json({checkErrorMessage});
-});
-
-// 식단 삭제 처리
-router.post("/remover/:cntntsNo", async (req, res) => {
-  let { cntntsNo } = req.params;
-
+// 음식 제거 처리
+router.post("/remover/:fdCntntsNo", async (req, res) => {
+  let { fdCntntsNo } = req.params;
+  let { previousPage } = req.body;
+  
   try {
-    let diet = await Diet.findOne({cntntsNo});
+    let food = await Food.findOne({fdCntntsNo});
 
-    if (diet) {
+    if (food) {
       // 이미지 파일 있으면 제거
-      let imgPath = path.join(imgDirectory, diet.rtnStreFileNm);
+      let imgPath = path.join(imgDirectory, food.rtnStreFileNm);
       fsPromises.access(imgPath, fs.constants.F_OK).then(async () => {
         await fsPromises.rm(imgPath);
       }).catch(() => {});
 
-      await Diet.findOneAndRemove({cntntsNo});
+      await Food.findOneAndRemove({fdCntntsNo});
     }
-
   } catch (err) {
     console.log(err);
   }
 
-  req.session.message = "식단 삭제 완료!";
-  res.redirect("/admin/diet");
+  if (previousPage) {
+    if (previousPage.includes("/admin/diet/detail")) {
+      return res.redirect(previousPage);
+    }
+  }
+
+  req.session.message = "음식 삭제 완료!";
+  res.redirect("/admin/food");
 });
-
-
 
 module.exports = router;

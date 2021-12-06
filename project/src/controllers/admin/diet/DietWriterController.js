@@ -3,8 +3,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
-const Food = require("../../models/Food");
-const Diet = require("../../models/Diet");
+const Food = require("../../../models/Food");
+const Diet = require("../../../models/Diet");
 
 module.exports.config = function (common) {
 

@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const fs = require("fs");
 const fsPromises = require("fs").promises;
 const path = require("path");
 
@@ -36,6 +37,16 @@ router.post("/dietSeCode/:index", async (req, res) => {
   let { index } = req.params;
   index = parseInt(index);
   let result = {};
+
+  // 폴더가 아직 없으면 폴더를 생성한다.
+  let directory = path.parse(recommendDietListFileSrc).dir;
+  await fsPromises.access(directory, fs.constants.F_OK).catch(async () => {
+    try {
+      await fsPromises.mkdir(directory, { recursive: true });
+    } catch (err) {
+      console.log(err);
+    }
+  });
 
   // 처음 처리하는거면 파일 생성
   if (index == 0) {

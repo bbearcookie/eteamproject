@@ -1,4 +1,6 @@
 database/
 utils/
 project/node_modules/
-project/public/image/
+project/public/image/diet/
+project/public/image/food/
+project/public/rawData/

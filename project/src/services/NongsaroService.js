@@ -274,7 +274,6 @@ module.exports.downloadImage = async function (url, directory, filename) {
     let imgPath;
     splitedUrl[splitedUrl.length - 1] = filename;
     destPath = path.join(process.env.INIT_CWD, directory, filename);
-    // console.log("저장할 경로: " + destPath);
   
     // 폴더가 아직 없으면 폴더를 생성한다.
     await fsPromises.access(imgPath, fs.constants.F_OK).catch(async () => {

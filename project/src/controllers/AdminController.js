@@ -1,15 +1,15 @@
 const router = require("express").Router();
 const nongsaroController = require("./admin/NongsaroController");
-const dietController = require("./admin/DietController");
-const foodController = require("./admin/FoodController");
-const adminService = require("../services/AdminService");
+const dietController = require("./admin/diet/DietController");
+const foodController = require("./admin/food/FoodController");
 
 // 관리자 접근 권한 확인
 router.use("/", async (req, res, next) => {
-  if (!adminService.isAdmin(req.user)) {
+  if (!req.user || req.user.role !== "role_admin") {
     res.status(403).json({error: "관리자가 아닙니다."});
     return;
   }
+
   next();
 });
 
