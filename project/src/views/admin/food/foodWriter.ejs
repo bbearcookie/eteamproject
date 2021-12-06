@@ -194,4 +194,15 @@
     let imgEl = document.querySelector("#foodImage");
     imgEl.setAttribute("src", window.URL.createObjectURL(e.files[0]));
   }
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+
+    // 식단 상세에서 음식 추가를 눌렀다면 식단 코드는 고정이니 변경불가 하도록 만듬.
+    let fdCntntsNoEl = document.querySelector(`#food-form input[name="cntntsNo"]`);
+    if (!isEmpty(fdCntntsNoEl.value)) {
+      fdCntntsNoEl.setAttribute("readonly", "true");
+    }
+  }
 </script>

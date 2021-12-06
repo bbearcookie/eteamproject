@@ -43,6 +43,7 @@
       <% } else { %>
         <input type="hidden" class="fdCntntsNo" value="<%=fdCntntsNo%>">
         <form id="food-form" action="/admin/food/editor/<%=fdCntntsNo%>" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="previousPage" value="<%=previousPage%>">
           <!-- 내용 영역 -->
           <section class="ms-3">
             <article class="d-flex">

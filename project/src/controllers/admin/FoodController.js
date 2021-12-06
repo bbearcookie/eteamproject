@@ -147,6 +147,7 @@ router.use("/editor", foodEditorController.router);
 // 음식 제거 처리
 router.post("/remover/:fdCntntsNo", async (req, res) => {
   let { fdCntntsNo } = req.params;
+  let { previousPage } = req.body;
   
   try {
     let food = await Food.findOne({fdCntntsNo});
@@ -162,6 +163,12 @@ router.post("/remover/:fdCntntsNo", async (req, res) => {
     }
   } catch (err) {
     console.log(err);
+  }
+
+  if (previousPage) {
+    if (previousPage.includes("/admin/diet/detail")) {
+      return res.redirect(previousPage);
+    }
   }
 
   req.session.message = "음식 삭제 완료!";

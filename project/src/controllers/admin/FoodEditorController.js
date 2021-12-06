@@ -10,6 +10,7 @@ module.exports.config = function (common) {
   // 음식 수정 페이지
   router.get("/:fdCntntsNo", async (req, res) => {
     let { fdCntntsNo } = req.params;
+    let { previousPage } = req.query;
     let notFoundError = false;
     let food;
 
@@ -38,13 +39,14 @@ module.exports.config = function (common) {
       rtnStreFileNm: food.rtnStreFileNm,
       errorMessage: "",
       notFoundError,
+      previousPage
     });
   });
 
   // 음식 수정 처리
   router.post("/:fdCntntsNo", common.upload.single("imageFile"), async (req, res) => {
     let { fdCntntsNo } = req.params;
-    let { fdNm, matrlInfo, ckngMthInfo } = req.body;
+    let { fdNm, matrlInfo, ckngMthInfo, previousPage } = req.body;
     const imgFile = req.file;
     let food;
 
@@ -72,6 +74,13 @@ module.exports.config = function (common) {
 
     } catch (err) {
       console.log(err);
+    }
+    
+    // 식단 상세 페이지에서 음식 추가요청 한거였으면 식단 상세페이지로 돌아감.
+    if (previousPage) {
+      if (previousPage.includes("/admin/diet/detail")) {
+        return res.redirect(previousPage);
+      }
     }
 
     res.render("admin/main.ejs", {
