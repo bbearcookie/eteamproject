@@ -102,7 +102,7 @@ router.get("/", async (req, res) => {
   res.render("admin/main", {
     pageName: "dietList",
     sectionName: "diet",
-    message: "",
+    message,
     dietList: dietList.slice(minContent, maxContent), // 보여줄 음식 목록
     numOfListItem: dietList.length, // 보여줄 음식 목록 갯수
     pageNo, // 보고 있는 페이지 번호
@@ -142,14 +142,10 @@ const dietWriterController = require("./DietWriterController");
 dietWriterController.config(common);
 router.use("/writer", dietWriterController.router);
 
-// 식단 생성 페이지 보여줌
-router.get("/editor", async (req, res) => {
-});
-
-// 식단 수정 페이지 보여줌
-router.get("/editor/:cntntsNo", async (req, res) => {
-  
-});
+// 식단 수정 페이지
+const dietEditorController = require("./DietEditorController");
+dietEditorController.config(common);
+router.use("/editor", dietEditorController.router);
 
 // 식단 생성 요청
 router.post("/editor", upload.single("imageFile"), async (req, res) => {
@@ -157,14 +153,45 @@ router.post("/editor", upload.single("imageFile"), async (req, res) => {
   res.send("Haha");
 });
 
-// 식단 수정 요청
-router.post("/editor/:cntntsNo", async (req, res) => {
+// 식단 삭제 가능 여부 체크
+router.post("/check/remover", async (req, res) => {
+  let { cntntsNo } = req.body;
+  let checkErrorMessage = "";
 
+  // 식단에 포함되는 하위 음식이 있으면 식단 삭제 불가능.
+  let food = await Food.findOne({cntntsNo});
+  if (food) {
+    checkErrorMessage = "식단에 포함되는 하위 음식을 먼저 모두 삭제해주세요.";
+  }
+
+  res.json({checkErrorMessage});
 });
 
-// 식단 삭제 요청
-router.delete("/:cntntsNo", async (req, res) => {
+// 식단 삭제 처리
+router.post("/remover/:cntntsNo", async (req, res) => {
+  let { cntntsNo } = req.params;
 
+  try {
+    let diet = await Diet.findOne({cntntsNo});
+
+    if (diet) {
+      // 이미지 파일 있으면 제거
+      let imgPath = path.join(imgDirectory, diet.rtnStreFileNm);
+      fsPromises.access(imgPath, fs.constants.F_OK).then(async () => {
+        await fsPromises.rm(imgPath);
+      }).catch(() => {});
+
+      await Diet.findOneAndRemove({cntntsNo});
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  req.session.message = "식단 삭제 완료!";
+  res.redirect("/admin/diet");
 });
+
+
 
 module.exports = router;

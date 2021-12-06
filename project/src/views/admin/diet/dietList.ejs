@@ -72,5 +72,17 @@
     let params = getQueryParams();
     window.location.href = "/admin/diet/writer/" + toQueryString(params);
   }
-  
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+    
+    // 메시지가 있다면 보여줌
+    let messageEl = document.querySelector(".diet-main .success-alert");
+    console.log(messageEl);
+    if (messageEl.innerText !== "") {
+      messageEl.style.display = "block";
+    }
+    
+  }
 </script>

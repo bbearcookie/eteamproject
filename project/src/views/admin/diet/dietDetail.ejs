@@ -42,6 +42,27 @@
       <% if (notFoundError) { %>
       <p>해당 음식을 찾을 수 없습니다!</p>
       <% } else { %>
+
+      <!-- 식단 삭제 모달 -->
+      <div class="modal fade" id="dietRemoveModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">식단 삭제</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div><%=diet.dietNm%>을(를) 정말로 삭제하시겠습니까?</div>
+            </div>
+            <form action="/admin/diet/remover/<%=diet.cntntsNo%>" method="post" id="dietRemoveForm" class="modal-footer">
+              <div class="m-2 error-alert alert alert-danger" style="display: none"></div>
+              <button type="button" class="btn btn-danger" onclick="onClickDietRemoveButton()">예</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <!-- 내용 영역 -->
       <section class="ms-3">
         <div class="d-flex">
@@ -57,8 +78,10 @@
           </div>
           <div class="ms-4 d-flex flex-column" style="margin-top: 60px">
             <p class="mb-0"><b>상세 정보</b></p>
-            <p><%=diet.dietCn%></p>
-            <p class="mb-0"><b>영양 성분</b></p>
+            <% for (oneLine of diet.dietCn.split("\n")) { %>
+              <p class="mb-0"><%=oneLine%></p>
+            <% } %>
+            <p class="mt-4 mb-0"><b>영양 성분</b></p>
             <p class="mb-0"><b>열량:</b> <%=diet.clriInfo%>kcal</p>
             <p class="mb-0"><b>당질:</b> <%=diet.crbhInfo%>g</p>
             <p class="mb-0"><b>단백질:</b> <%=diet.protInfo%>g</p>
@@ -69,8 +92,8 @@
 
       <!-- 버튼 영역 -->
       <section class="d-flex justify-content-end">
-        <button href="/admin/food/editor/<%=diet.cntntsNo%>" class="btn btn-secondary" onclick="onClickEditButton()">수정하기</a>
-        <button type="button" class="ms-3 btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal">삭제하기</button>
+        <button href="/admin/diet/editor/<%=diet.cntntsNo%>" class="btn btn-secondary" onclick="onClickEditButton()">수정하기</a>
+        <button type="button" class="ms-3 btn btn-danger" data-bs-toggle="modal" data-bs-target="#dietRemoveModal">삭제하기</button>
       </section>
       <% } %>
     </div>
@@ -148,6 +171,13 @@
 
 <script>
 
+  // 수정하기 버튼 눌렀을때
+  function onClickEditButton() {
+    let params = getQueryParams();
+    let cntntsNo = document.querySelector(".cntntsNo").innerText;
+    window.location.href = "/admin/diet/editor/" + cntntsNo + toQueryString(params);
+  }
+
   // 식단에 새로운 음식 추가하기 버튼 눌렀을때
   function onClickAddButton() {
     let params = getQueryParams();
@@ -155,6 +185,29 @@
 
     params["previousPage"] = `/admin/diet/detail/${cntntsNo}`;
     window.location.href = "/admin/food/writer/" + toQueryString(params);
+  }
+
+  // 식단 삭제 버튼 눌렀을때
+  async function onClickDietRemoveButton() {
+    console.log("onClickDietRemoveButton");
+    let cntntsNo = document.querySelector(".cntntsNo").innerText;
+
+    try {
+      const res = await axios.post("/admin/diet/check/remover", {
+        cntntsNo,
+      });
+
+    // 유효성 검사 실패시 alert요소 보여줌. 성공시 폼 post 요청
+      if (res.data.checkErrorMessage) {
+        let errorEl = document.querySelector("#dietRemoveModal .error-alert");
+        errorEl.style.display = "block";
+        errorEl.innerText = res.data.checkErrorMessage;
+      } else {
+        document.querySelector("#dietRemoveForm").submit();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // 음식 수정하기 버튼 눌렀을때

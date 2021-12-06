@@ -46,7 +46,7 @@ module.exports.config = function (common) {
   // 음식 수정 처리
   router.post("/:fdCntntsNo", common.upload.single("imageFile"), async (req, res) => {
     let { fdCntntsNo } = req.params;
-    let { fdNm, matrlInfo, ckngMthInfo, previousPage } = req.body;
+    const { fdNm, matrlInfo, ckngMthInfo, previousPage } = req.body;
     const imgFile = req.file;
     let food;
 
@@ -77,6 +77,7 @@ module.exports.config = function (common) {
     }
     
     // 식단 상세 페이지에서 음식 추가요청 한거였으면 식단 상세페이지로 돌아감.
+    console.log(previousPage);
     if (previousPage) {
       if (previousPage.includes("/admin/diet/detail")) {
         return res.redirect(previousPage);
