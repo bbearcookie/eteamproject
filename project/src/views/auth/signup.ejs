@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <title>회원가입 페이지</title>
+    <link href="/plugin/bootstrap-5.1.3-dist/css/bootstrap.min.css" rel="stylesheet"> <!-- 부트스트랩 css파일 -->
+  </head>
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background-color: #f5f5f5;
+    }
+
+    .form-signin {
+      width: 100%;
+      max-width: 330px;
+      padding: 15px;
+      margin: auto;
+    }
+
+    .form-signin .checkbox {
+      font-weight: 400;
+    }
+
+    .form-signin .form-floating:focus-within {
+      z-index: 2;
+    }
+
+    .form-signin input[type="email"] {
+      margin-bottom: -1px;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .form-signin input[type="password"] {
+      margin-bottom: 10px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  </style>
+  <body class="text-center">
+
+    <main class="form-signin">
+      <form action="/auth/signup" method="post">
+        <img class="mb-4" src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+        <h1 class="h3 mb-3 fw-normal">회원가입</h1>
+        <% if (typeof(alert.error) !== "undefined") { %>
+          <div class="alert alert-danger">
+            <%=alert.error%>
+          </div>
+        <% } %>
+    
+        <div class="form-floating">
+          <input type="text" name="username" class="form-control" id="floatingInput" placeholder="아이디" autocomplete="off">
+          <label for="floatingInput">아이디</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="비밀번호" autocomplete="off">
+          <label for="floatingPassword">비밀번호</label>
+        </div>
+    
+        <button class="mt-1 w-100 btn btn-lg btn-primary" type="submit">회원가입</button>
+        <a class="mt-3 w-100 btn btn-lg btn-primary" href="/auth/login">로그인 페이지로</a>
+        <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
+      </form>
+    </main>
+    
+    <script src="/plugin/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"></script> <!-- 부트스트랩 js파일-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- ajax 요청을 위한 axios -->
+    <script src="https://kit.fontawesome.com/8f09a07a77.js" crossorigin="anonymous"></script> <!-- 각종 아이콘을 제공해주는 font-awesome -->
+  </body>
+</html>

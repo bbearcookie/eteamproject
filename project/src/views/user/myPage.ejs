@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>마이 페이지</h2>
+<form action = "/myPage" method="post">
+    <p>
+    <input id="age" type="text" name="userAge" placeholder="나이">
+    </p>
+    <p> 성별 
+    <input id="gender" type="radio" name="userGender", value="female", />여성
+    <input id="gender" type="radio" name="userGender", value="male", />남성   
+    </p>
+    <p>
+    <select id="list" name="list" >
+    <option value="1">디비1</option>
+    <option value="2">디비2</option>
+    </select>
+    </p>
+    <p>
+    <button id ="save">저장 및 추천식단 보기</button>  
+    </p> 
+</form> 
+    <table>
+        <tr>
+            <td> <button id ="food"> 내 식단 보기</button> </td>
+            <td> <button id = "health"> 내 운동 보기</button> </td>
+        </tr>
+    </table>
+</body>
+</html>
