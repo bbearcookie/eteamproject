@@ -4,13 +4,24 @@ const { passport } = require("../config/passport");
 
 // 로그인 페이지 보여줌
 router.get("/login", async (req, res) => {
+  let successMessage = undefined;
 
   // 이미 로그인 되어있으면 메인 페이지로 이동
   if (req.user) {
     return res.redirect("/");
   }
 
-  res.render("auth/login", { alert: req.flash() });
+  // 회원가입 성공후 리다이렉션 된거면 성공 메시지 출력
+  if (req.session.successMessage) {
+    successMessage = req.session.successMessage;
+    req.session.successMessage = null;
+  }
+
+
+  res.render("auth/login", {
+    alert: req.flash(),
+    successMessage
+  });
 });
 
 // 회원가입 페이지 보여줌
@@ -43,6 +54,7 @@ router.post("/signup", async (req, res) => {
   await user.save((err) => {
     if (!err) {
       req.flash();
+      req.session.successMessage = "회원가입 성공!";
       res.redirect("/auth/login");
     } else {
       res.redirect("/auth/signup");

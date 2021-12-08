@@ -16,7 +16,7 @@ router.use("/", async (req, res, next) => {
 // 관리자 메인 페이지 보여줌
 router.get("/", async (req, res) => {
   res.render("admin/main.ejs", {
-    pageName: "main",
+    pageName: "mainContent",
     sectionName: "main"
   });
 });
