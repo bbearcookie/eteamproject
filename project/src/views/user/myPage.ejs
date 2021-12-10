@@ -1,36 +1,94 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h2>마이 페이지</h2>
-<form action = "/myPage" method="post">
-    <p>
-    <input id="age" type="text" name="userAge" placeholder="나이">
-    </p>
-    <p> 성별 
-    <input id="gender" type="radio" name="userGender", value="female", />여성
-    <input id="gender" type="radio" name="userGender", value="male", />남성   
-    </p>
-    <p>
-    <select id="list" name="list" >
-    <option value="1">디비1</option>
-    <option value="2">디비2</option>
-    </select>
-    </p>
-    <p>
-    <button id ="save">저장 및 추천식단 보기</button>  
-    </p> 
-</form> 
-    <table>
-        <tr>
-            <td> <button id ="food"> 내 식단 보기</button> </td>
-            <td> <button id = "health"> 내 운동 보기</button> </td>
-        </tr>
-    </table>
-</body>
+<html>
+  <head>
+    <title>한다: 가장 한국적인 다이어트 솔루션</title>
+    <link href="/plugin/bootstrap-5.1.3-dist/css/bootstrap.min.css" rel="stylesheet"> <!-- 부트스트랩 css파일 -->
+    <style>
+      .main .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main">
+      <%- include("partials/navbar.ejs") %>
+      <form action="/myPage" method="POST" class="mt-4 content">
+        <h2>마이 페이지</h2>
+
+        <div class="mt-4 w-25 form-floating">
+          <input
+            type="text"
+            class="form-control"
+            name="name"
+            value="<%=user.name%>"
+            placeholder="이름"
+            autocomplete="off">
+          <label>이름</label>
+        </div>
+        <div class="mt-2 w-25 form-floating">
+          <input
+            type="text"
+            class="form-control"
+            name="age"
+            value="<%=user.age%>"
+            placeholder="나이"
+            autocomplete="off"
+            required
+            oninput="onInputInNumberInput(this)">
+          <label>나이</label>
+        </div>
+        <div class="mt-3 w-25 form-floating d-flex">
+          <p style="flex-grow: 1;">성별</p>
+          <input type="hidden" id="gender" value="<%=user.gender%>"> <!-- 기존 사용자의 성별에 따라서 어떤 radio에 checked 속성을 줄지를 정한다. -->
+          <div class="d-flex" style="flex-grow: 5;">
+            <div class="form-check" style="flex-grow: 1">
+              <input class="form-check-input" type="radio" value="female" name="gender" id="gender_female">
+              <label class="form-check-label" for="gender_female">
+                여성
+              </label>
+            </div>
+            <div class="form-check" style="flex-grow: 1">
+              <input class="form-check-input" type="radio" value="male" name="gender" id="gender_male">
+              <label class="form-check-label" for="gender_male">
+                남성
+              </label>
+            </div>
+          </div>
+        </div>
+        <a class="w-25 btn btn-lg btn-secondary" href="/allergy">알레르기 정보</a>
+        <button class="mt-3 w-25 btn btn-lg btn-dark" type="submit">저장 및 추천식단 보기</button>
+        <div class="mt-3 w-25 form-floating d-flex">
+          <button class="w-50 me-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid">내 식단 보기</button>
+          <button class="w-50 ms-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid">내 운동 보기</button>
+        </div>
+      </form>
+    </main>
+    
+    <script src="/plugin/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"></script> <!-- 부트스트랩 js파일-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- ajax 요청을 위한 axios -->
+    <script src="https://kit.fontawesome.com/8f09a07a77.js" crossorigin="anonymous"></script> <!-- 각종 아이콘을 제공해주는 font-awesome -->
+  </body>
 </html>
+
+<script>
+  // 숫자만 입력 가능한 Input에 다른 값 입력되면 제거
+  function onInputInNumberInput(e) {
+    e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+  }
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+
+    // 사용자의 기존 성별에 따라서 어떤 radio에 checked 속성을 줄지를 정한다.
+    let gender = document.querySelector("#gender").value;
+    if (gender === "female") {
+      let femaleEl = document.querySelector("#gender_female");
+      femaleEl.setAttribute("checked", "on");
+    } else if (gender === "male") {
+      let maleEl = document.querySelector("#gender_male");
+      maleEl.setAttribute("checked", "on");
+    }
+  }
+</script>
