@@ -11,7 +11,7 @@
       }
       .main .content .inner-content {
         width: 60%;
-        min-height: 50%;
+        padding-bottom: 50px;
         margin-top: 50px;
         display: flex;
         flex-direction: column;
@@ -20,11 +20,19 @@
         border-radius: 7px;
       }
       .main .content .allergy-content {
-        width: 100%;
+        width: 85%;
         display: flex;
-        justify-content: space-around;
+        flex-wrap: wrap;
+        align-self: flex-end;
       }
       .main .content .allergy-content .form-check {
+        margin-top: 10px;
+        width: 33.33%;
+        display: flex;
+        justify-content: start;
+      }
+      .form-check .form-check-input {
+        margin-right: 7px;
       }
       .title-label {
         background: black;
@@ -38,6 +46,7 @@
   <body>
     <main class="main">
       <%- include("partials/navbar.ejs") %>
+      <input type="hidden" id="userHaveAllergy" value="<%=user.allergy%>">
 
       <form action="/allergy" method="post" class="content">
 
@@ -46,37 +55,21 @@
 
           <section class="allergy-content">
 
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="check1">
-              <label class="form-check-label" for="check1">
-                check1
-              </label>
-            </div>
-
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="check2">
-              <label class="form-check-label" for="check2">
-                check2
-              </label>
-            </div>
-
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="check3">
-              <label class="form-check-label" for="check3">
-                check3
-              </label>
-            </div>
+            <% allergyList.map((allergy) => { %>
+              <div class="form-check">
+                <input class="form-check-input allergy-input" type="checkbox" name="<%=allergy.name%>" value="<%=allergy._id%>" id="<%=allergy._id%>">
+                <label class="form-check-label" for="<%=allergy._id%>">
+                  <%=allergy.name%>
+                </label>
+              </div>
+            <% }) %>
 
           </section>
-          <p>hi</p>
-          <p>hi</p>
-          <p>hi</p>
-          <p>hi</p>
         </article>
         
         <div class="mt-4 w-25 form-floating d-flex">
           <button class="w-50 me-3 btn btn-lg btn-light" type="submit" style="border: gray 2px solid">저장</button>
-          <button class="w-50 ms-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid">초기화</button>
+          <button class="w-50 ms-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid" onclick="onClickReset()">초기화</button>
         </div>
 
       </form>
@@ -90,4 +83,24 @@
 </html>
 
 <script>
+  // 초기화 버튼 클릭시
+  function onClickReset() {
+    let allergyInputEl = document.querySelectorAll(".allergy-input");
+
+    for (allergyEl of allergyInputEl) {
+      allergyEl.checked = false;
+    }
+  }
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+
+    let userHaveAllergyList = document.querySelector("#userHaveAllergy").value.split(",");
+    for (let i in userHaveAllergyList) {
+      let allergyEl = document.getElementById(userHaveAllergyList[i]);
+      allergyEl.checked = true;
+    }
+    console.log(userHaveAllergyList);
+  }
 </script>

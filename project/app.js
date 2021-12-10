@@ -2,8 +2,7 @@
 require("dotenv").config();
 
 // 몽고 DB 연결
-const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGO_URL);
+require("./src/config/mongodb").connect();
 
 // 익스프레스 설정 (세션 정보는 redis에 저장됨)
 const app = require("./src/config/express").app;
