@@ -1,0 +1,228 @@
+<style>
+    .main {
+      flex-basis: 100%;
+      flex-shrink: 1;
+      flex-grow: 0;
+    }
+    .exercise-editor .divider {
+      height: 3px;
+      background: black;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    .exercise-editor .back-button {
+      cursor: pointer;
+      text-decoration: none;
+      color: black;
+    }
+  </style>
+  
+  <main class="main m-5">
+  
+    <!-- 운동 상세 정보 -->
+    <section class="exercise-editor card w-100">
+      <div class="card-body w-100">
+  
+        <!-- 머릿말 부분 -->
+        <section class="mt-3 ms-3 d-flex justify-content-between">
+          <h4 class=""><b>새로운 운동 작성</b></h4>
+          <a class="back-button mt-2" onclick="onClickBackButton('/admin/exercise')"><b>| 뒤로가기</b></a>
+        </section>
+        <div class="divider"></div>
+  
+        <!-- 몸통 부분 -->
+        <form id="exercise-form" action="/admin/exercise/writer" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="previousPage" value="<%=previousPage%>">
+          <!-- 내용 영역 -->
+          <section class="ms-3">
+            <article class="d-flex">
+              <div class="d-flex flex-column">
+                <img
+                  id="exerciseImage"
+                  width="250px"
+                  height="250px"
+                  src="/image/exercise/normal/?>"
+                  alt="운동"
+                  onerror="this.src='/image/no_image_available.jpg';">
+                <input
+                  class="d-none form-control"
+                  id="imageFileInput"
+                  type="file"
+                  accept=".jpg, .png"
+                  name="imageFile"
+                  onchange="onChangeImageFile(this)">
+                <div class="mt-2" aria-label="margin"></div>
+                <button type="button" class="btn btn-secondary" onclick="onClickImageSelectButton()">이미지 변경</button>
+              </div>
+              <div class="ms-3 mt-2 d-flex flex-column flex-grow-1">
+  
+                <!-- 운동코드 -->
+                <div class="d-flex">
+                  <div class="w-50 me-5 form-floating">
+                    <input
+                      type="text"
+                      maxlength="10"
+                      title="숫자만 입력해주세요."
+                      name="ExcntntsNo"
+                      class="form-control"
+                      placeholder="운동코드"
+                      required
+                      autocomplete="off">
+                    <label>운동 코드</label>
+                  </div>
+                </div>
+  
+                <!-- 운동 이름 -->
+                <div class="mt-3 form-floating">
+                  <input
+                    type="text"
+                    name="ExcNm"
+                    class="form-control"
+                    placeholder="운동 이름"
+                    autocomplete="off">
+                  <label>운동 이름</label>
+                </div>
+  
+                <!-- 운동 분류 -->
+                <div class="mt-3 form-floating">
+                  <input
+                    type="text"
+                    name="ExcType"
+                    class="form-control"
+                    placeholder="운동 분류"
+                    required
+                    autocomplete="off">
+                  <label>운동 분류</label>
+                </div>
+
+                <!-- 운동 장소 -->
+                <div class="mt-3 form-floating">
+                    <input
+                      type="text"
+                      name="Excplace"
+                      class="form-control"
+                      placeholder="운동 장소"
+                      required
+                      autocomplete="off">
+                    <label>운동 장소</label>
+                  </div>
+
+                  <!-- 운동 강도 -->
+                <div class="mt-3 form-floating">
+                    <input
+                      type="text"
+                      name="Excintensity"
+                      class="form-control"
+                      placeholder="운동 강도"
+                      required
+                      autocomplete="off">
+                    <label>운동 강도</label>
+                  </div>
+
+                   <!-- 운동 인원 -->
+                <div class="mt-3 form-floating">
+                    <input
+                      type="text"
+                      name="Exccnt"
+                      class="form-control"
+                      placeholder="운동 인원"
+                      required
+                      autocomplete="off">
+                    <label>운동 인원</label>
+                  </div>
+
+                  <div class="mt-3 form-floating">
+                    <input
+                      type="text"
+                      name="HowtoExcInfo"
+                      class="form-control"
+                      placeholder="운동 방법 : 유튜브 링크 정보"
+                      required
+                      autocomplete="off">
+                    <label>운동 방법 : 유튜브 링크 정보</label>
+                  </div>
+  
+                <!-- 운동 상세 설명 -->
+                <div class="mt-3 form-floating">
+                  <span class="input-group-text">운동 상세 설명</span>
+                  <textarea
+                    class="h-100 form-control"
+                    name="ExcCn"
+                    value=""
+                    rows="10"></textarea>
+                </div>
+  
+              </div>
+            </article>
+          </section>
+  
+          <section class="d-flex flex-column align-items-end" style="margin-top: 5rem;">
+            <div class="error-alert alert alert-danger" style="display: none"></div>
+            <!-- 버튼 영역 -->
+            <section class="d-flex justify-content-end">
+              <button type="button" class="ms-3 btn btn-primary" onclick="onClickSubmitButton()">작성하기</button>
+              <button type="button" class="ms-3 btn btn-secondary" onclick="onClickBackButton('/admin/exercise')">취소하기</button>
+            </section>
+          </section>
+        </form>
+        
+        </article>
+      </div>
+  
+    </section>
+  </main>
+  
+  <script>
+    function showErrorAlert(message) {
+        let errorEl = document.querySelector(".exercise-editor .error-alert");
+        errorEl.style.display = "block";
+        errorEl.innerText = message;
+    }
+  
+    // 작성하기 버튼 클릭시
+    async function onClickSubmitButton() {
+      let ExcntntsNo = document.querySelector(`#exercise-form input[name="ExcntntsNo"]`).value;
+  
+      // 클라이언트단 유효성 검사
+      let regex = /[^0-9]/g; // 숫자가 아닌 값 추출
+      if (isEmpty(ExcntntsNo)) {
+        return showErrorAlert("운동 코드를 입력해주세요.");
+      }
+      if (!isEmpty(ExcntntsNo.match(regex))) {
+        return showErrorAlert("운동 코드는 숫자만 입력가능합니다.");
+      }
+  
+      try {
+        const res = await axios.post("/admin/exercise/writer/check", {
+          ExcntntsNo,
+        });
+  
+        // 유효성 검사 실패시 alert요소 보여줌. 성공시 폼 post 요청
+        if (res.data.checkErrorMessage) {
+          let errorEl = document.querySelector(".exercise-editor .error-alert");
+          errorEl.style.display = "block";
+          errorEl.innerText = res.data.checkErrorMessage;
+        } else {
+          document.querySelector("#exercise-form").submit();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  
+    // 이미지 파일 변경 버튼 클릭시
+    function onClickImageSelectButton() {
+      document.querySelector("#imageFileInput").click();
+    }
+  
+    // 이미지 파일 변경시
+    function onChangeImageFile(e) {
+      let imgEl = document.querySelector("#exerciseImage");
+      imgEl.setAttribute("src", window.URL.createObjectURL(e.files[0]));
+    }
+  
+    // 페이지 로드 시
+    window.addEventListener("load", onLoad, true);
+    function onLoad() {
+    }
+  </script>

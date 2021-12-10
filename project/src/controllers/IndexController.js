@@ -45,7 +45,7 @@ router.get("/recomDiet",async(req,res)=>{
 
 router.get("/recomWork",async(req,res)=>{
   res.render("user/recomWork");
-}); //get 운동추천페이지
+}); //get 운동추천페이지, 운동챗봇으로 연결
 
 // get 마이페이지
 router.get("/myPage",async(req,res)=>{
