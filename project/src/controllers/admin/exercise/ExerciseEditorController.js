@@ -48,7 +48,7 @@ module.exports.config = function (common) {
   // 운동 수정 처리
   router.post("/:ExcntntsNo", common.upload.single("imageFile"), async (req, res) => {
     let { ExcntntsNo } = req.params;
-    const { ExcNm, ExcCn, HowtoExcInfo, previousPage } = req.body;
+    const { ExcNm, ExcCn, HowtoExcInfo, ExcType, ExcPlace, Excintensity, Exccnt /*previousPage*/ } = req.body;
     const imgFile = req.file;
     let exercise;
 
@@ -57,6 +57,9 @@ module.exports.config = function (common) {
       exercise.ExcNm = ExcNm;
       exercise.ExcCn = ExcCn;
       exercise.HowtoExcInfo = HowtoExcInfo;
+      exercise.ExcType=ExcType;
+      exercise.Excintensity=Excintensity;
+      exercise.Exccnt=Exccnt;
 
       // 임시 이름으로 다운받은 이미지가 있으면 이미지 파일명 변경
       if (imgFile) {
