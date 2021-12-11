@@ -86,16 +86,13 @@
   // 초기화 버튼 클릭시
   function onClickReset() {
     let allergyInputEl = document.querySelectorAll(".allergy-input");
-
     for (allergyEl of allergyInputEl) {
       allergyEl.checked = false;
     }
   }
-
   // 페이지 로드 시
   window.addEventListener("load", onLoad, true);
   function onLoad() {
-
     let userHaveAllergyList = document.querySelector("#userHaveAllergy").value.split(",");
     for (let i in userHaveAllergyList) {
       let allergyEl = document.getElementById(userHaveAllergyList[i]);

@@ -1,0 +1,140 @@
+<html>
+  <head>
+    <title>한다: 가장 한국적인 다이어트 솔루션</title>
+    <link href="/plugin/bootstrap-5.1.3-dist/css/bootstrap.min.css" rel="stylesheet"> <!-- 부트스트랩 css파일 -->
+    <style>
+      .main .content {
+        height: 100%;
+        margin-bottom: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .main .content .inner-content {
+        width: 60%;
+        padding-bottom: 50px;
+        margin-top: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: gray 2px solid;
+        border-radius: 7px;
+      }
+      .title-label {
+        background: black;
+        color: white;
+        position: relative;
+        padding: 7px;
+        top: -25;
+      }
+      .main .content .diet-area {
+        width: 90%;
+        padding: 10px;
+        display: flex;
+        flex-basis: 200px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .main .content .diet-area.active {
+        background: black;
+        color: white;
+      }
+      .diet-area .diet-title {
+        width: 7.5%;
+        font-weight: bold;
+        align-self: center;
+      }
+      .diet-area .diet-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        margin-left: 15px;
+      }
+      .diet-area .diet-image-name-area {
+        width: 100%;
+        display: flex;
+      }
+      .diet-image-name-area img {
+        align-self: center;
+      }
+      .diet-image-name-area p {
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main">
+      <%- include("partials/navbar.ejs") %>
+
+      <section class="content">
+
+        <article class="inner-content">
+          <h2 class="title-label">추천 식단</h2>
+          
+          <% dietList.forEach((diet, idx) => { %>
+            <div class="diet-area" idx="<%=idx%>">
+              <div class="diet-title">
+                <% if (idx === 0) { %>
+                  <p>아침</p>
+                <% } else if (idx === 1) { %>
+                  <p>점심</p>
+                <% } else if (idx === 2) { %>
+                  <p>저녁</p>
+                <% } %>
+              </div>
+              <div class="diet-content active" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickDietCard(this)">
+                <div class="diet-image-name-area">
+                  <img
+                    width="200px"
+                    height="200px"
+                    src="/image/diet/normal/<%=diet.rtnStreFileNm%>"
+                    alt="음식"
+                    onerror="this.src='/image/no_image_available.jpg';">
+                  <div class="d-flex flex-column ms-3">
+                    <p style="font-size: 24px;"><b><%=diet.dietNm%></b></p>
+                    <p><%=diet.dietCn%></p>
+                  </div>
+                </div>
+                <div class="diet-nutrition-area">
+                  <p style="color: grey;"><%=diet.dietNtrsmallInfo%></p>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+
+        </article>
+
+        <div class="mt-4 w-50 alert alert-primary" role="alert">
+          식단 추가 완료 or 실패 메시지 보여줄 공간
+        </div>
+        
+        <div class="mt-4 w-25 form-floating d-flex">
+          <button class="w-50 me-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid">내 식단에 추가</button>
+          <a class="w-50 ms-3 btn btn-lg btn-light" href="/myPage" style="border: gray 2px solid">마이페이지로</a>
+        </div>
+
+      </section>
+
+    </main>
+    
+    <script src="/plugin/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"></script> <!-- 부트스트랩 js파일-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- ajax 요청을 위한 axios -->
+    <script src="https://kit.fontawesome.com/8f09a07a77.js" crossorigin="anonymous"></script> <!-- 각종 아이콘을 제공해주는 font-awesome -->
+  </body>
+</html>
+
+<script>
+  // 식단 클릭시
+  function onClickDietCard(e) {
+    let idx = e.getAttribute("idx");
+    let dietAreaElList = document.querySelectorAll(".diet-area");
+
+    for (dietAreaEl of dietAreaElList) {
+      if (dietAreaEl.getAttribute("idx") === idx) {
+        dietAreaEl.classList.add("active");
+      } else {
+        dietAreaEl.classList.remove("active");
+      }
+    }
+  }
+</script>
