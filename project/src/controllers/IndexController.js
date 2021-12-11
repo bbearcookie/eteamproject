@@ -6,7 +6,6 @@ const Food = require("../models/Food");
 const Allergy = require("../models/Allergy");
 const indexService = require("../services/IndexService");
 
-//================================= << get >> =================================
 // 메인 페이지 (식단추천 or 운동추천 선택 페이지)
 router.get("/", async (req, res) => {
 
@@ -127,6 +126,14 @@ router.post("/allergy", async (req, res) => {
   await user.save();
 
   res.redirect("/myPage");
+});
+
+// 식단 추천 페이지에서 내 식단에 추가 처리
+router.post("/recommendDiet/:cntntsNo", async (req, res) => {
+  let { cntntsNo } = req.params;
+
+  console.log(cntntsNo);
+  res.json({message: "하하호호"});
 });
 
 module.exports = router;

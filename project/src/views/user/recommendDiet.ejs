@@ -82,7 +82,7 @@
                   <p>저녁</p>
                 <% } %>
               </div>
-              <div class="diet-content active" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickDietCard(this)">
+              <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickDietCard(this)">
                 <div class="diet-image-name-area">
                   <img
                     width="200px"
@@ -109,7 +109,7 @@
         </div>
         
         <div class="mt-4 w-25 form-floating d-flex">
-          <button class="w-50 me-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid">내 식단에 추가</button>
+          <button class="w-50 me-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid" onclick="onClickAddButton()">내 식단에 추가</button>
           <a class="w-50 ms-3 btn btn-lg btn-light" href="/myPage" style="border: gray 2px solid">마이페이지로</a>
         </div>
 
@@ -124,6 +124,7 @@
 </html>
 
 <script>
+  
   // 식단 클릭시
   function onClickDietCard(e) {
     let idx = e.getAttribute("idx");
@@ -135,6 +136,20 @@
       } else {
         dietAreaEl.classList.remove("active");
       }
+    }
+  }
+
+  // 내 식단에 추가 버튼 클릭시
+  function onClickAddButton() {
+    let selectedDietContentEl = document.querySelector(".diet-area.active .diet-content");
+
+    // TODO: post /recommendDiet/:cntntsno 로 ajax 요청한다.
+    if (selectedDietContentEl) {
+      let cntntsno = selectedDietContentEl.getAttribute("cntntsno");
+      console.log(cntntsno);
+
+      const res = await axios.post("/recommendDiet/" + cntntsno);
+      console.log(res.data);
     }
   }
 </script>
