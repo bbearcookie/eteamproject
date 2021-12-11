@@ -141,9 +141,9 @@ exerciseWriterController.config(common);
 router.use("/writer", exerciseWriterController.router);
 
 // 운동 수정 페이지
-const foodEditorController = require("./ExerciseEditorController");
-foodEditorController.config(common);
-router.use("/editor", foodEditorController.router);
+const exerciseEditorController = require("./ExerciseEditorController");
+exerciseEditorController.config(common);
+router.use("/editor", exerciseEditorController.router);
 
 // 운동 제거 처리
 router.post("/remover/:ExcntntsNo", async (req, res) => {

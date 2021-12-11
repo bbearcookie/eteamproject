@@ -9,12 +9,7 @@ module.exports.config = function (common) {
   // 운동 생성 페이지
   router.get("/", async (req, res) => {
     let { previousPage } = req.query;
-    let cntntsNo = "";
 
-    // 식단 상세에서 운동 추가 눌렀을 때, 이전 페이지 정보에서 식단 코드 부분만 추출
-    if (previousPage) {
-      cntntsNo = previousPage.split("/").slice(-1);
-    }
     
     res.render("admin/main.ejs", {
       pageName: "exerciseWriter",
