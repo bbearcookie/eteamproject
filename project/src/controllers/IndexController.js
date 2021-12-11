@@ -132,8 +132,15 @@ router.post("/allergy", async (req, res) => {
 router.post("/recommendDiet/:cntntsNo", async (req, res) => {
   let { cntntsNo } = req.params;
 
-  console.log(cntntsNo);
-  res.json({message: "하하호호"});
+  // 사용자의 내 식단 목록에 아직 해당 식단이 들어있지 않다면 추가해줌.
+  let diet = await Diet.findOne({cntntsNo});
+  let user = await User.findOne({username: req.user.username});
+  if (!user.myDiet.includes(cntntsNo)) {
+    user.myDiet.push(cntntsNo);
+  }
+  await user.save();
+  
+  res.json({message: `${diet.dietNm} 식단이 내 식단 목록에 추가되었습니다.`});
 });
 
 module.exports = router;
