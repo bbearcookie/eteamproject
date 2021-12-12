@@ -64,7 +64,7 @@ router.get("/recommendDiet", async (req, res) => {
     }
   }
 
-  // 알레르기 성분이 재료로 포함되지 않은 음식만 추출하여 가져오기 위해 
+  // 알레르기 성분이 재료로 포함되지 않은 음식만 추출하여 가져오기 위해 정규식을 작성할것이다.
   let regexString = "";
   for (str of allergyStrings) {
 
@@ -84,17 +84,21 @@ router.get("/recommendDiet", async (req, res) => {
 
   // 알레르기 성분이 없는 음식이 포함된 식단을 가져옴.
   for (food of foodList) {
+    
+    // 아직 cntntsNoList에 해당 식단이 들어가지 않은 경우 추가한다.
+    // 여러개의 음식이 같은 식단을 가리킬수 있는데 식단이 중복으로 들어가는걸 방지하기 위함.
     if (!cntntsNoList.includes(food.cntntsNo)) {
       cntntsNoList.push(food.cntntsNo);
     }
   }
+  // cntntsNoList에 식단코드가 기록되어있는 식단들만 정보를 가져옴.
   let dietList = await Diet.find({ cntntsNo: { $in: cntntsNoList }});
 
   // 랜덤해서 3개의 식단만 화면으로 보내줌.
   let resultDietList = [];
   while (resultDietList.length < 3) {
     
-    // 중복된 식단은 보여주면 안됨.
+    // 랜덤으로 뽑는 과정에 중복된 식단은 보여주면 안됨.
     let diet = dietList[indexService.getRandomInt(0, dietList.length)];
     if (!resultDietList.includes(diet)) {
       resultDietList.push(diet);

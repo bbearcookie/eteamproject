@@ -107,6 +107,26 @@
       <% if (pageName === "nongsaro") {  %>
         <%- include("nongsaro.ejs") %>
       <% } %>
+
+      <!-- 운동 목록 조회 페이지 -->
+      <% if (pageName === "exerciseList") { %>
+        <%- include("./exercise/exerciseList.ejs") %>
+      <% } %>
+
+      <!-- 운동 상세 페이지 -->
+      <% if (pageName === "exerciseDetail") { %>
+        <%- include("./exercise/exerciseDetail.ejs") %>
+      <% } %>
+
+      <!-- 운동 생성 페이지 -->
+      <% if (pageName === "exerciseWriter") { %>
+        <%- include("./exercise/exerciseWriter.ejs") %>
+      <% } %>
+
+      <!-- 운동 수정 페이지 -->
+      <% if (pageName === "exerciseEditor") { %>
+        <%- include("./exercise/exerciseEditor.ejs") %>
+      <% } %>
     </main>
     
     <script src="/plugin/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"></script> <!-- 부트스트랩 js파일-->
