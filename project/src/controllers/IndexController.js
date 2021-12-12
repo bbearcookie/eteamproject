@@ -106,6 +106,10 @@ router.get("/recommendDiet", async (req, res) => {
   });
 });
 
+router.get("/recomWork",async(req,res)=>{
+  res.render("user/recomWork");
+}); //get 운동추천페이지, 운동챗봇으로 연결
+
 // 마이 페이지 작성 처리
 router.post("/myPage", async (req, res) => {
   const { name, age, gender } = req.body;

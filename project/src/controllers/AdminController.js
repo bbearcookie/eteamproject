@@ -2,6 +2,7 @@ const router = require("express").Router();
 const nongsaroController = require("./admin/NongsaroController");
 const dietController = require("./admin/diet/DietController");
 const foodController = require("./admin/food/FoodController");
+const exerciseController = require("./admin/exercise/ExerciseController");
 
 // 관리자 접근 권한 확인
 router.use("/", async (req, res, next) => {
@@ -25,5 +26,6 @@ router.get("/", async (req, res) => {
 router.use("/nongsaro", nongsaroController);
 router.use("/diet", dietController);
 router.use("/food", foodController);
+router.use("/exercise", exerciseController);
 
 module.exports = router;

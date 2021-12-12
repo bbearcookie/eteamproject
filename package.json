@@ -1,0 +1,19 @@
+{
+  "name": "handa",
+  "version": "1.0.0",
+  "description": "실제로 구현한 서버 프로젝트의 내용들이다.  \r project/.env: 서버에서 사용할 환경변수들이 담겨있다.  \r project/public: 정적 데이터들이 담겨있는 폴더이다.  \r project/public/css: 프론트 화면에서 사용할 css 파일들을 모아놓은 폴더이다.  \r project/public/js: 프론트 화면에서 사용할 js 파일들을 모아놓은 폴더이다.  \r project/public/plugin: 부트스트랩, jQuery 등 라이브러리들이 저장된 폴더이다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yangcho/handa.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yangcho/handa/issues"
+  },
+  "homepage": "https://github.com/Yangcho/handa#readme"
+}
