@@ -6,8 +6,6 @@
 
 <!-- 페이지네이션 바 -->
 <nav class="pagination-bar" aria-label="Page Navigation">
-  <input type="hidden" id="numOfListItem" value="<%=numOfListItem%>"> <!-- 페이지 계산을 위해 사용되는 음식 총 갯수 -->
-  <input type="hidden" id="sectionName" value="<%=sectionName%>"> <!-- 리다이렉션 URL에 포함시키기 위함 -->
   <ul class="pagination">
     <li class="page-item">
       <a class="page-link" aria-label="Previous" onclick="onClickPreviousPageItem()">
@@ -17,8 +15,20 @@
     <% let minPage, maxPage; %>
     <% if (pageNo <= 10) { minPage = 1; } %> <!-- 첫 페이지는 무조건 1임. -->
     <% if (pageNo > 10) { minPage = parseInt((pageNo - 1) / 10) * 10 + 1; } %> <!-- 그 다음부턴 10씩 증가함. -->
-    <% if (minPage + 10 < parseInt(numOfListItem / 10)) { maxPage = minPage + 9 } %> <!-- 페이지 리스트에 보여주는건 최대 10개임. -->
-    <% if (minPage + 10 >= parseInt(numOfListItem / 10)) { maxPage = parseInt(numOfListItem / 10) + 1 } %> <!-- 10개 이전에 보여줄 데이터들이 끝나면 최대 페이지는 거기까지만임. -->
+
+
+    <!-- 보여줄 목록 갯수가 딱 10으로 나누어 떨어질경우  -->
+    <% if (numOfListItem % 10 === 0) { %>
+      <% if (minPage + 10 < parseInt(numOfListItem / 10)) { maxPage = minPage + 9 } %>
+      <% if (minPage + 10 >= parseInt(numOfListItem / 10)) { maxPage = parseInt(numOfListItem / 10) } %>
+    <% } %>
+
+    <!-- 보여줄 목록 갯수가 딱 10으로 나누어 떨어지지 않을 경우 -->
+    <% if (numOfListItem % 10 != 0) { %>
+      <% if (minPage + 10 < parseInt(numOfListItem / 10)) { maxPage = minPage + 9 } %>
+      <% if (minPage + 10 >= parseInt(numOfListItem / 10)) { maxPage = parseInt(numOfListItem / 10) + 1 } %>
+    <% } %>
+
     <% for (let i = minPage; i <= maxPage; i++) { %>
       <li class="page-item"><a class="page-link" value="<%=i%>" onclick="onClickPageItem(this)"><%=i%></a></li>
     <% } %>
@@ -28,6 +38,10 @@
       </a>
     </li>
   </ul>
+  <input type="hidden" id="numOfListItem" value="<%=numOfListItem%>"> <!-- 페이지 계산을 위해 사용되는 음식 총 갯수 -->
+  <input type="hidden" id="sectionName" value="<%=sectionName%>"> <!-- 리다이렉션 URL에 포함시키기 위함 -->
+  <input type="hidden" id="minPage" value="<%=minPage%>"> <!-- 네비바에 보이는 가장 낮은 페이지 -->
+  <input type="hidden" id="maxPage" value="<%=maxPage%>"> <!-- 네비바에 보이는 가장 높은 페이지 -->
 </nav>
 
 <script>
@@ -69,6 +83,7 @@
     let pageNo = params.pageNo;
     let numOfListItem = document.getElementById("numOfListItem").value;
     let sectionName = document.getElementById("sectionName").value;
+    let maxPage = parseInt(document.getElementById("maxPage").value);
 
     if (isEmpty(pageNo)) {
       pageNo = 1;
@@ -76,10 +91,17 @@
       pageNo = parseInt(pageNo);
     }
 
-    // 만약 페이지 네비에 마지막 페이지가 보이는 상태라면 그 마지막 페이지로 이동
+    // 다음 페이지는 현재 보고있는 페이지에서 10을 더한 값이다.
+    // 그런데 다음 페이지로 가기전에 보여줄 페이지 내용이 끝난다면 그 마지막 위치로 이동한다.
     let destPage = pageNo + 10;
-    if (destPage >= parseInt(numOfListItem / 10) + 1) {
-      destPage = parseInt(numOfListItem / 10) + 1;
+    if (numOfListItem % 10 === 0) {
+      if (destPage >= parseInt(numOfListItem / 10)) {
+        destPage = parseInt(numOfListItem / 10);
+      }
+    } else {
+      if (destPage >= parseInt(numOfListItem / 10) + 1) {
+        destPage = parseInt(numOfListItem / 10) + 1;
+      }
     }
 
     params["pageNo"] = destPage;

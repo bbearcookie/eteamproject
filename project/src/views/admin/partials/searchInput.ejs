@@ -15,6 +15,16 @@
         <option value="matrlInfo">재료정보</option>
       </select>
     <% } %>
+    <% if (sectionName === "exercise") { %>
+      <select name="searchOption" id="searchSelect" class="form-select">
+        <option value="ExcntntsNo">운동코드</option>
+        <option value="ExcNm">운동명</option>
+        <option value="ExcType">분류</option>
+        <option value="Excplace">장소</option>
+        <option value="Excintensity">강도</option>
+        <option value="Exccnt">인원</option>
+      </select>
+    <% } %>
       <input type="search" name="searchKeyword" value="<%=searchKeyword%>" class="w-25 form-control" placeholder="검색" autocomplete="off">
       <span class="input-group-append">
         <button class="btn btn-outline-secondary bg-white btn-lg" type="submit">
