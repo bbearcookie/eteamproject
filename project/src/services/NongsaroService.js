@@ -270,13 +270,13 @@ module.exports.downloadImage = async function (url, directory, filename) {
   
   // 이미지 파일 정보가 존재할 경우에만 다운로드한다.
   if (filename) {
-    let splitedUrl = url.split("/");
-    let imgPath;
-    splitedUrl[splitedUrl.length - 1] = filename;
-    destPath = path.join(process.env.INIT_CWD, directory, filename);
-  
+    // let splitedUrl = url.split("/");
+    // let imgPath;
+    // splitedUrl[splitedUrl.length - 1] = filename;
+    let destPath = path.join(process.env.INIT_CWD, directory, filename);
+    
     // 폴더가 아직 없으면 폴더를 생성한다.
-    await fsPromises.access(imgPath, fs.constants.F_OK).catch(async () => {
+    await fsPromises.access(directory, fs.constants.F_OK).catch(async () => {
       try {
         await fsPromises.mkdir(directory, { recursive: true });
       } catch (err) {
@@ -285,9 +285,9 @@ module.exports.downloadImage = async function (url, directory, filename) {
     });
   
     // 이미지 파일이 아직 없으면 다운로드한다.
-    await fsPromises.access(imgPath, fs.constants.F_OK).catch(async () => {
+    await fsPromises.access(destPath, fs.constants.F_OK).catch(async () => {
       const response = await axios({
-        url: splitedUrl.join("/"),
+        url: url,
         method: 'GET',
         responseType: 'stream'
       });

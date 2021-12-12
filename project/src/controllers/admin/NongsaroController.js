@@ -6,6 +6,7 @@ const path = require("path");
 const nongsaroService = require("../../services/NongsaroService");
 const Diet = require("../../models/Diet");
 const Food = require("../../models/Food");
+const Exercise = require("../../models/Exercise");
 const recommendDietListFileSrc = path.join(process.env.INIT_CWD, "public/rawData/recommendDietList.json");
 
 // 농사로 데이터 페이지 보여줌
@@ -14,6 +15,49 @@ router.get("/", async (req, res) => {
     pageName: "nongsaro",
     sectionName: "nongsaro"
   });
+});
+
+// json 파일로 저장된 운동 데이터들을 DB에 저장함 (농사로와는 무관함)
+router.post("/exerdata", async (req, res) => {
+  let exerList = JSON.parse(await fsPromises.readFile(path.join(process.env.INIT_CWD, "public/csv/Exerdata.json"), "utf-8"));
+
+  try {
+    for (exer of exerList) {
+      let exercise = await Exercise.findOne({ExcntntsNo: exer.ExcntntsNo});
+
+      // 아직 DB에 해당 운동 코드의 운동이 저장 되어 있지 않은 상태에만 저장한다.
+      if (!exercise) {
+        let exercise = new Exercise();
+        let splitedImageUrl = exer.imageLink.split("/"); // 이미지 파일의 URL을 / 를 기준으로 분리해놓음.
+        exercise.ExcntntsNo = exer.ExcntntsNo;
+        exercise.ExcNm = exer.ExcNm;
+        exercise.ExcType = exer.ExcType;
+        exercise.Excplace = exer.Excplace;
+        exercise.Exccnt = exer.Exccnt;
+        exercise.ExcCn = exer.ExcCn;
+        exercise.HowtoExcInfo = exer.HowtoExcInfo;
+
+        // 이미지 링크의 URL에서 가장 마지막 부분이 파일명 부분임.
+        // 이미지 링크의 마지막 부분에 .jpg?type=w2 처럼 쿼리가 붙은경우 ?로 split해서 첫번째 부분만 추출해서 쿼리 부분은 버려야함.
+        let fileNm = splitedImageUrl[splitedImageUrl.length - 1].split("?")[0];
+
+        // imageLink의 마지막 부분에 확장자가 안붙어있는 경우엔 .jpg를 붙힌 값을 파일명으로 저장해야함.
+        if (!fileNm.includes(".")) {
+          fileNm += ".jpg"
+        }
+        exercise.rtnStreFileNm = fileNm;
+        exercise.rtnThumbFileNm = fileNm;
+        
+        await exercise.save();
+        await nongsaroService.downloadImage(exer.imageLink, "public/image/exercise/normal", exercise.rtnStreFileNm);
+      }
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.json({message: `${exerList.length} 개의 운동 데이터 DB에 저장 완료!`});
 });
 
 // 농사로API에 있는 식단 분류 코드를 모두 가져옴.
@@ -144,8 +188,8 @@ router.get("/dietImage/:index", async (req, res) => {
   let result = {};
 
   try {
-    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/114/89326_MF_ATTACH_01_TMB.jpg", "public/image/diet/normal", diet.rtnStreFileNm);
-    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/114/89326_MF_ATTACH_01_TMB.jpg", "public/image/diet/thumbnail", diet.rtnThumbFileNm);
+    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/114/" + diet.rtnStreFileNm, "public/image/diet/normal", diet.rtnStreFileNm);
+    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/114/" + diet.rtnThumbFileNm, "public/image/diet/thumbnail", diet.rtnThumbFileNm);
     result.message = `${index}. ${diet.rtnStreFileNm} 다운로드 완료`;
   } catch (err) {
     result.error = err.toString();
@@ -164,8 +208,8 @@ router.get("/foodImage/:index", async (req, res) => {
   let result = {};
 
   try {
-    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/809/49494_MF_ATTACH_01.jpg", "public/image/food/normal", food.rtnStreFileNm);
-    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/809/49494_MF_ATTACH_01.jpg", "public/image/food/thumbnail", food.rtnThumbFileNm);
+    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/809/" + food.rtnStreFileNm, "public/image/food/normal", food.rtnStreFileNm);
+    await nongsaroService.downloadImage("http://www.nongsaro.go.kr/cms_contents/809/" + food.rtnThumbFileNm, "public/image/food/thumbnail", food.rtnThumbFileNm);
     result.message = `${index}. ${food.rtnStreFileNm} 다운로드 완료`;
   } catch (err) {
     result.error = err.toString();
