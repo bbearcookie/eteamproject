@@ -10,7 +10,8 @@ const UserSchema = mongoose.Schema({
   name: { type: String, default: "" }, // 이름
   age: { type : Number, default: 0 }, // 나이
   gender: { type : String, default: "female" }, // 성별
-  allergy: { type: Array, default: [] } // 알레르기 성분 정보. Allergy 스키마의 _id 값을 배열로 포함한다.
+  allergy: { type: Array, default: [] }, // 알레르기 성분 정보. Allergy 스키마의 _id 값을 배열로 포함한다.
+  myDiet: { type: Array, default: [] }, // 사용자의 내 식단 정보. 식단의 cntntsNo 값만 정수 형태로 배열로 들어가있다.
 }, { timestamp: true });
 
 // 메소드들
