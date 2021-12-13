@@ -3,6 +3,7 @@ const nongsaroController = require("./admin/NongsaroController");
 const dietController = require("./admin/diet/DietController");
 const foodController = require("./admin/food/FoodController");
 const exerciseController = require("./admin/exercise/ExerciseController");
+const userController = require("./admin/user/UserController");
 
 // 관리자 접근 권한 확인
 router.use("/", async (req, res, next) => {
@@ -23,6 +24,7 @@ router.get("/", async (req, res) => {
 });
 
 // /admin 하위 기능들
+router.use("/user", userController);
 router.use("/nongsaro", nongsaroController);
 router.use("/diet", dietController);
 router.use("/food", foodController);
