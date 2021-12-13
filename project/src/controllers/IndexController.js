@@ -80,13 +80,20 @@ router.get("/recommendDiet", async (req, res) => {
     regexString += str;
   }
 
-  // ?! 부분이 부정문 부분임. 저 부분 지우면 알레르기 성분이 포함된 음식만 추출.
-  regexString = `^(?!.*(${regexString})).*$`;
-  let regex = new RegExp(regexString);
-  let foodList = await Food.find({"matrlInfo": { $regex: regex } });
-  let cntntsNoList = [];
+  // 알레르기 정보에 기록된 재료이 있으면 그 재료가 들어간 음식은 제외함.
+  let regex, foodList;
+  if (regexString !== "") {
+    // ?! 부분이 부정문 부분임. 저 부분 지우면 알레르기 성분이 포함된 음식만 추출.
+    regexString = `^(?!.*(${regexString})).*$`;
+    regex = new RegExp(regexString);
+    foodList = await Food.find({"matrlInfo": { $regex: regex } });
+  // 알레르기 정보에 아무 성분도 기록되어 있지 않으면 모든 음식을 가져옴.
+  } else {
+    foodList = await Food.find();
+  }
 
-  // 알레르기 성분이 없는 음식이 포함된 식단을 가져옴.
+  // 음식이 포함된 식단을 가져옴.
+  let cntntsNoList = [];
   for (food of foodList) {
     
     // 아직 cntntsNoList에 해당 식단이 들어가지 않은 경우 추가한다.
@@ -95,12 +102,13 @@ router.get("/recommendDiet", async (req, res) => {
       cntntsNoList.push(food.cntntsNo);
     }
   }
+
   // cntntsNoList에 식단코드가 기록되어있는 식단들만 정보를 가져옴.
   let dietList = await Diet.find({ cntntsNo: { $in: cntntsNoList }});
 
   // 랜덤해서 3개의 식단만 화면으로 보내줌.
   let resultDietList = [];
-  while (resultDietList.length < 3) {
+  while (resultDietList.length < 3 || resultDietList.length >= dietList.length) {
     
     // 랜덤으로 뽑는 과정에 중복된 식단은 보여주면 안됨.
     let diet = dietList[indexService.getRandomInt(0, dietList.length)];
@@ -113,10 +121,6 @@ router.get("/recommendDiet", async (req, res) => {
     dietList: resultDietList
   });
 });
-
-router.get("/recomWork",async(req,res)=>{
-  res.render("user/recomWork");
-}); //get 운동추천페이지, 운동챗봇으로 연결
 
 // 마이 페이지 작성 처리
 router.post("/myPage", async (req, res) => {
