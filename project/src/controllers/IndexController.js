@@ -106,15 +106,75 @@ router.get("/recommendDiet", async (req, res) => {
   // cntntsNoList에 식단코드가 기록되어있는 식단들만 정보를 가져옴.
   let dietList = await Diet.find({ cntntsNo: { $in: cntntsNoList }});
 
-  // 랜덤해서 3개의 식단만 화면으로 보내줌.
-  let resultDietList = [];
-  while (resultDietList.length < 3 || resultDietList.length >= dietList.length) {
-    
-    // 랜덤으로 뽑는 과정에 중복된 식단은 보여주면 안됨.
-    let diet = dietList[indexService.getRandomInt(0, dietList.length)];
-    if (!resultDietList.includes(diet)) {
-      resultDietList.push(diet);
+  // 성별, 나이에 따라서 필요한 하루 섭취 열량을 계산한다.
+  let maxCalorie = 0; // 섭취 해야할 열량
+  if (user.gender === "male") {
+    if (user.age <= 2) {
+      maxCalorie = 900;
+    } else if (user.age > 2 && user.age <= 5) {
+      maxCalorie = 1400;
+    } else if (user.age > 5 && user.age <= 8) {
+      maxCalorie = 1700;
+    } else if (user.age > 8 && user.age <= 11) {
+      maxCalorie = 2000;
+    } else if (user.age > 11 && user.age <= 14) {
+      maxCalorie = 2500;
+    } else if (user.age > 14 && user.age <= 18) {
+      maxCalorie = 2700;
+    } else if (user.age > 18 && user.age <= 29) {
+      maxCalorie = 2600;
+    } else if (user.age > 29 && user.age <= 49) {
+      maxCalorie = 2500;
+    } else if (user.age > 49 && user.age <= 64) {
+      maxCalorie = 2200;
+    } else if (user.age > 64 && user.age <= 74) {
+      maxCalorie = 2000;
+    } else if (user.age > 74) {
+      maxCalorie = 1900;
     }
+  } else if (user.gender === "female") {
+    if (user.age <= 2) {
+      maxCalorie = 900;
+    } else if (user.age > 2 && user.age <= 5) {
+      maxCalorie = 1400;
+    } else if (user.age > 5 && user.age <= 8) {
+      maxCalorie = 1500;
+    } else if (user.age > 8 && user.age <= 11) {
+      maxCalorie = 1800;
+    } else if (user.age > 11 && user.age <= 14) {
+      maxCalorie = 2000;
+    } else if (user.age > 14 && user.age <= 18) {
+      maxCalorie = 2000;
+    } else if (user.age > 18 && user.age <= 29) {
+      maxCalorie = 2000;
+    } else if (user.age > 29 && user.age <= 49) {
+      maxCalorie = 1900;
+    } else if (user.age > 49 && user.age <= 64) {
+      maxCalorie = 1700;
+    } else if (user.age > 64 && user.age <= 74) {
+      maxCalorie = 1600;
+    } else if (user.age > 74) {
+      maxCalorie = 1500;
+    }
+  }
+
+  // 하루 섭취 칼로리 요구 수치를 충족할만큼 랜덤으로 식단 뽑아서 추가.
+  let resultDietList = [];
+  let filteredDietList = dietList;
+  let intakedCalorie = 0; // 식단 랜덤으로 뽑으면서 열량 합 계산
+  while (filteredDietList.length > 0) {
+    let requireCalroie = maxCalorie - intakedCalorie;
+    filteredDietList = dietList.filter(diet => diet.clriInfo < requireCalroie - 200);
+
+    if (filteredDietList.length > 0) {
+      let diet = filteredDietList[indexService.getRandomInt(0, filteredDietList.length)];
+
+      if (!resultDietList.includes(diet)) {
+        resultDietList.push(diet);
+      }
+      intakedCalorie += diet.clriInfo;
+    }
+
   }
 
   res.render("user/recommendDiet", {

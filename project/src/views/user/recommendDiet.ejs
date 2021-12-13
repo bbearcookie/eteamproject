@@ -73,15 +73,7 @@
           
           <% dietList.forEach((diet, idx) => { %>
             <div class="diet-area" idx="<%=idx%>">
-              <div class="diet-title">
-                <% if (idx === 0) { %>
-                  <p>아침</p>
-                <% } else if (idx === 1) { %>
-                  <p>점심</p>
-                <% } else if (idx === 2) { %>
-                  <p>저녁</p>
-                <% } %>
-              </div>
+              <div class="diet-title"><%=idx+1%></div>
               <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickDietCard(this)">
                 <div class="diet-image-name-area">
                   <img
