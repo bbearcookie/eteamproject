@@ -16,6 +16,8 @@
 <!-- 사용자 관리 메인 화면 -->
 <main class="user-main m-5">
 
+  <div class="success-alert alert alert-success" style="display: none;"><%=message%></div>
+
   <!-- 사용자 리스트 -->
   <section class="card w-100" aria-label="user List">
     <div class="card-body w-100">
@@ -25,8 +27,9 @@
           <tr>
             <th style="width: 200px">아이디</th>
             <th style="width: 500px">역할</th>
-            <th></th>
-            <th></th>
+            <th>식단목록</th>
+            <th>운동목록</th>
+            <th>삭제</th>
           </tr>
         </thead>
         <tbody>
@@ -41,11 +44,37 @@
               <% } %>
               <td><button type="button" username="<%=user.username%>" class="btn btn-light" style="border: gray 2px solid;" onclick="onClickViewDietList(this)">식단 목록 조회</button></td>
               <td><button type="button" username="<%=user.username%>" class="btn btn-light" style="border: gray 2px solid;" onclick="onClickViewExerciseList(this)">운동 목록 조회</button></td>
-              <td><button type="button" class="btn btn-danger">삭제</button></td>
+
+              <!-- 관리자를 대상으로는 삭제 불가능 -->
+              <td>
+                <% if (user.role !== "role_admin") { %>
+                  <button type="button" class="btn btn-danger" username="<%=user.username%>" onclick="onClickRemoveButton(this)">삭제</button>
+                <% } %>
+              </td>
             </tr>
+
           <% }) %>
         </tbody>
       </table>
+
+      <!-- 삭제 모달 -->
+      <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">사용자 삭제</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              사용자 을(를) 정말로 삭제하시겠습니까?
+            </div>
+            <form action="#" method="post" class="modal-footer">
+              <button type="submit" class="btn btn-danger">예</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+            </form>
+          </div>
+        </div>
+      </div>
       
       <article class="d-flex flex-column mt-4">
         <section class="d-flex justify-content-end mb-3">
@@ -82,4 +111,30 @@
     window.location.href = "/admin/user/exercise/" + toQueryString(params);
   }
 
+  // 사용자 삭제 버튼 클릭시
+  async function onClickRemoveButton(e) {
+    let username = e.getAttribute("username");
+    let removeModalEl = document.querySelector("#removeModal");
+    removeModalEl.querySelector(".modal-body").innerText = `사용자 ${username} 을(를) 정말로 삭제하시겠습니까?`;
+    removeModalEl.querySelector("form").setAttribute("action", `/admin/user/removal/${username}`);
+
+    // 모달 창 띄워줌
+    let removeModal = new bootstrap.Modal(removeModalEl, {keyboard: true});
+    removeModal.show();
+
+    console.log(username);
+  }
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+    
+    // 메시지가 있다면 보여줌
+    let messageEl = document.querySelector(".user-main .success-alert");
+    console.log(messageEl);
+    if (messageEl.innerText !== "") {
+      messageEl.style.display = "block";
+    }
+    
+  }
 </script>

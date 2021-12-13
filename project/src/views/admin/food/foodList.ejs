@@ -17,6 +17,7 @@
 <main class="food-main m-5">
 
   <div class="success-alert alert alert-success" style="display: none;"><%=message%></div>
+  <div class="error-alert alert alert-danger" style="display: none;"><%=errorMessage%></div>
 
   <!-- 음식 리스트 -->
   <section class="card w-100" aria-label="Food List">
@@ -79,9 +80,14 @@
     
     // 메시지가 있다면 보여줌
     let messageEl = document.querySelector(".food-main .success-alert");
-    console.log(messageEl);
     if (messageEl.innerText !== "") {
       messageEl.style.display = "block";
+    }
+
+    // 에러메시지가 있다면 보여줌
+    let errorMessageEl = document.querySelector(".food-main .error-alert");
+    if (errorMessageEl.innerText !== "") {
+      errorMessageEl.style.display = "block";
     }
     
   }
