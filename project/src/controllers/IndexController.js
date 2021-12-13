@@ -6,6 +6,10 @@ const Food = require("../models/Food");
 const Allergy = require("../models/Allergy");
 const indexService = require("../services/IndexService");
 
+// 내 식단 컨트롤러, 내 운동 컨트롤러 등록
+router.use("/", require("./user/userDietController"));
+router.use("/", require("./user/userExerciseController"));
+
 // 메인 페이지 (식단추천 or 운동추천 선택 페이지)
 router.get("/", async (req, res) => {
 

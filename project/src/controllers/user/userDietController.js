@@ -1,37 +1,93 @@
 const router = require("express").Router();
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const fsPromises = require("fs").promises;
 const Diet = require("../../../models/Diet");
+const User = require("../../../models/User");
 
 
-/* 사용자가 마이페이지에서 연결되는 각 내 식단/내 운동에서(마이페이지-내식단보기/내운동보기)
-* 내 식단 및 내 운동을 조회하고/삭제하고/전체초기화(전체삭제)하는 기능을 포함한다.
-* 리스트에 식단코드(내운동 의 경우 운동코드)를 저장하고?.//이부분은 추천기능의 몫이... 아님 추천에서 사용자가 '내식단에 저장'
-* 기능을 이용하면->내 식단에 저장되어있어야함. 추천기능은 식단코드만 전송해주고, 리스트는 여기서 구현
-* 사용자가 내 식단 페이지를 확인하면 식단코드를 이용해 썸네일, 식단명, 식단 상세설명, 식단 영양소 정보, 열량 당질 단백질 지질
-* 제공
-* '추천식단'의 내식단에추가 기능과 연결 필요?
+/* 사용자가 내 식단을 조회하고/삭제하고/전체초기화(전체삭제)하는 기능을 포함한다.
+삭제:내식단에서 특정 식단 제거
+->삭제 버튼 눌린 식단을->User의 myDiet에서 제거
+전체초기화:User의 myDiet 배열 초기화
+
 */
 
+  //내 식단 보여줌
+  router.get("/myDiet", async (req, res) => {
 
-//추천기능에서 보내는 식단코드 받아오는 함수
-function getDiet(cntntsNo)  //맞춰보고
-{
+// <<<<<<<<<<<<<<< MerryChristmas
+    //cntntsNo == myDiet배열에 저장된 정수인 경우 출력
+    // let myDietList = await Diet.find({cntntsNo:User.myDiet});
+    //cntntsNo:User.myDiet는 Diet의 cntntsNo가 User의 myDiet과 일치하는 경우 cntntsNo를 find하는 것을 의도하였는데 이렇게 하는 게 맞을지
+    //아니면 위에서 let mydietconditon = await User.find({myDiet}); 라고 선언해서 값을 집어넣은 뒤에 let myDietList = await Diet.find({cntntsNo:mydietcondition}); 이라고 해야할지 모르겠습니다
+    //혹시 보시면 확인부탁드립니다 죄송합니다...
+// <<<<<<<<<<<<<<<
+    
+    let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴. (현재 로그인한 사용자의 정보는 req.user 로 가져올 수 있음.)
+    let myDietList = await Diet.find({ cntntsNo: { $in: user.myDiet }}); // 사용자의 내 식단에 포함된 식단들의 모든 정보를 가져옴.
 
-}
+    res.render("user/myDiet", {
+      myDietList
+    });
+});
+
+// 내 식단에서 특정 식단 삭제 처리
+router.post("/myDiet/remover/:cntntsNo", async (req, res) => {
+  // 여기서 cntntsNo는 사용자의 내 식단에서 삭제하려는 cntntsNo 값임.
+  let { cntntsNo } = req.params;
+
+  try {
+// <<<<<<<<<<<<<<< MerryChristmas
+//     let mydiet2 = await User.findOne({myDiet});
+
+//     if (mydiet2) {
+//       await User.findOneAndRemove({myDiet});
+//     }
+// <<<<<<<<<<<<<<<
+    
+    let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴.
+    
+    // User 스키마의 myDiet 필드에 지우려는 식단코드인 myDiet 값이 존재한다면 배열에서 제거.
+    // 실제로 동작시켜보지는 않아서 나중에 테스트 해봐야 할듯 합니다!!
+    let index = user.myDiet.indexOf(myDiet);
+    if (index !== -1) {
+      user.myDiet.splice(index, 1);
+    }
+    
+    // 변경된 내용 DB에 적용 (여기서 변경된건 User 스키마 속의 myDiet 값)
+    await user.save();
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  req.session.message = "식단 삭제 완료!";
+  res.redirect("/user/myDiet");
+});
+
+//내 식단 전체삭제(초기화)
+router.post("/myDiet/remover", async (req, res) => {
+  let { myDiet } = req.params;
+
+  try {
+// <<<<<<<<<<<<<<< MerryChristmas
+//     let mydiet2 = await User.find({myDiet});
+
+//     if (mydiet2) {
+//       User.myDiet.length=0; //myDiet 배열의 length를 0으로 설정하여 초기화함
+//     }
+// <<<<<<<<<<<<<<<<
+    
+    let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴.
+    user.myDiet = []; // 사용자의 내 식단 모두 초기화
+    await user.save(); // 변경된 내용 DB에 적용
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  req.session.message = "내 식단 전체삭제 완료!";
+  res.redirect("/user/myDiet");
+});
 
 
-// 마이페이지-'내 식단'에서 내식단 조회하기
-router.get("/", async (req, res) => {
-    //res.render("admin/main.ejs", {
-    //  pageName: "mainContent",
-    //  sectionName: "main"
-    //});
-  });
 
-  // 식단 생성 페이지
-const dietWriterController = require("./DietWriterController");
-dietWriterController.config(common);
-router.use("/writer", dietWriterController.router);
+module.exports = router;
