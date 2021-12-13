@@ -73,6 +73,11 @@
         <%- include("./user/userDietList.ejs") %>
       <% } %>
 
+      <!-- 사용자의 내 운동 목록 조회 페이지 -->
+      <% if (pageName === "userExerciseList") { %>
+        <%- include("./user/userExerciseList.ejs") %>
+      <% } %>
+
       <!-- 식단 목록 조회 페이지 -->
       <% if (pageName === "dietList") { %>
         <%- include("./diet/dietList.ejs") %>

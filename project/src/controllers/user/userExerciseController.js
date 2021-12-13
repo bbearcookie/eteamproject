@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const Exercise = require("../../../models/Exercise");
-const User = require("../../../models/User");
+const Exercise = require("../../models/Exercise");
+const User = require("../../models/User");
 
 
 /* 사용자가 내 운동을 조회하고/삭제하고/전체초기화(전체삭제)하는 기능을 포함한다.

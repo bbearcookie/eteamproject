@@ -43,8 +43,7 @@ router.get("/", async (req, res) => {
 
 // 사용자의 식단 목록 페이지
 router.get("/diet", async (req, res) => {
-  let { username } = req.query;
-  let message = "";
+  let { username, pageNo } = req.query;
 
   let user = await User.findOne({username});
   let dietList = await Diet.find({cntntsNo: { $in: user.myDiet } });
@@ -53,7 +52,25 @@ router.get("/diet", async (req, res) => {
     pageName: "userDietList",
     sectionName: "user",
     user,
+    pageNo,
     dietList,
+  });
+});
+
+// 사용자의 운동 목록 페이지
+router.get("/exercise", async (req, res) => {
+  let { username, pageNo } = req.query;
+  let message = "";
+
+  let user = await User.findOne({username});
+  let exerciseList = await Exercise.find({ExcntntsNo: { $in: user.myExercise } });
+
+  res.render("admin/main.ejs", {
+    pageName: "userExerciseList",
+    sectionName: "user",
+    user,
+    pageNo,
+    exerciseList,
     message,
   });
 });

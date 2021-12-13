@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const Diet = require("../../../models/Diet");
-const User = require("../../../models/User");
+const Diet = require("../../models/Diet");
+const User = require("../../models/User");
 
 
 /* 사용자가 내 식단을 조회하고/삭제하고/전체초기화(전체삭제)하는 기능을 포함한다.
