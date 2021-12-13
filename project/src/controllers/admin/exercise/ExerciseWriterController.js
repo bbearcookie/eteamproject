@@ -58,10 +58,13 @@ module.exports.config = function (common) {
     
       let exercise = new Exercise({
         ExcntntsNo,
-        cntntsNo,
         ExcNm,
-        ExcCn,
+        ExcType,
+        Excplace,
+        Excintensity,
+        Exccnt,
         HowtoExcInfo,
+        ExcCn,
         rtnStreFileNm: destFileName,
         registDt: Date.now()
       });
@@ -73,13 +76,6 @@ module.exports.config = function (common) {
     } catch (err) {
       console.log(err);
     }
-
-    if (previousPage) {
-      if (previousPage.includes("/admin/exercise/detail")) {
-        return res.redirect(previousPage);
-      }
-    }
-    
 
     res.redirect("/admin/exercise");
   });

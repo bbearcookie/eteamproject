@@ -63,6 +63,16 @@
         <%- include("./mainContent.ejs") %>
       <% } %>
 
+      <!-- 사용자 목록 조회 페이지 -->
+      <% if (pageName === "userList") { %>
+        <%- include("./user/userList.ejs") %>
+      <% } %>
+
+      <!-- 사용자의 내 식단 목록 조회 페이지 -->
+      <% if (pageName === "userDietList") { %>
+        <%- include("./user/userDietList.ejs") %>
+      <% } %>
+
       <!-- 식단 목록 조회 페이지 -->
       <% if (pageName === "dietList") { %>
         <%- include("./diet/dietList.ejs") %>
@@ -103,11 +113,6 @@
         <%- include("./food/foodEditor.ejs") %>
       <% } %>
 
-      <!-- 농사로 데이터 페이지 -->
-      <% if (pageName === "nongsaro") {  %>
-        <%- include("nongsaro.ejs") %>
-      <% } %>
-
       <!-- 운동 목록 조회 페이지 -->
       <% if (pageName === "exerciseList") { %>
         <%- include("./exercise/exerciseList.ejs") %>
@@ -126,6 +131,11 @@
       <!-- 운동 수정 페이지 -->
       <% if (pageName === "exerciseEditor") { %>
         <%- include("./exercise/exerciseEditor.ejs") %>
+      <% } %>
+
+      <!-- 농사로 데이터 페이지 -->
+      <% if (pageName === "nongsaro") {  %>
+        <%- include("nongsaro.ejs") %>
       <% } %>
     </main>
     

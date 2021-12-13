@@ -72,7 +72,7 @@ router.get("/", async (req, res) => {
   let findExpr = {};
   if (searchKeyword) {
     // 운동명, 분류, 장소, 강도, 인원이  문자열 포함하는지 비교.
-    if (searchOption === "ExcNm" || searchOption === "ExcType" || searchOption === "ExcPlace" || searchOption === "Excintensity" || searchOption === "Exccnt") {
+    if (searchOption === "ExcNm" || searchOption === "ExcType" || searchOption === "Excplace" || searchOption === "Excintensity" || searchOption === "Exccnt") {
       findExpr[searchOption] = { $regex: `.*${searchKeyword}.*` };
     }
 

@@ -1,6 +1,11 @@
 <form class="ms-5" action="/admin/<%=sectionName%>" method="get">
   <div class="input-group">
     <input type="hidden" id="searchOption" value="<%=searchOption%>">
+    <% if (sectionName === "user") { %>
+      <select name="searchOption" id="searchSelect" class="form-select">
+        <option value="username">아이디</option>
+      </select>
+    <% } %>
     <% if (sectionName === "diet") { %>
       <select name="searchOption" id="searchSelect" class="form-select">
         <option value="cntntsNo">식단코드</option>
@@ -13,6 +18,15 @@
         <option value="fdCntntsNo">음식코드</option>
         <option value="fdNm">음식명</option>
         <option value="matrlInfo">재료정보</option>
+      </select>
+    <% } %>
+    <% if (sectionName === "exercise") { %>
+      <select name="searchOption" id="searchSelect" class="form-select">
+        <option value="ExcntntsNo">운동코드</option>
+        <option value="ExcNm">운동명</option>
+        <option value="ExcType">분류</option>
+        <option value="Excplace">장소</option>
+        <option value="Exccnt">인원</option>
       </select>
     <% } %>
       <input type="search" name="searchKeyword" value="<%=searchKeyword%>" class="w-25 form-control" placeholder="검색" autocomplete="off">

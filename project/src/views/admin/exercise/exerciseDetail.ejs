@@ -50,11 +50,17 @@
             </div>
             <div class="ms-4 d-flex flex-column" style="margin-top: 4rem">
               <p class="mb-0"><b>운동 정보</b></p>
-              <p>분류: <%=exercise.ExcType%> 장소: <%=exercise.Excplace%> 강도: <%=exercise.Excintensity%> 인원: <%=exercise.Exccnt%></p>
+              <p class="mb-0">분류: <%=exercise.ExcType%></p>
+              <p class="mb-0">장소: <%=exercise.Excplace%></p>
+              <p class="mb-0">강도: <%=exercise.Excintensity%></p>
+              <p>인원: <%=exercise.Exccnt%></p>
               <p class="mb-0"><b>운동 설명</b></p>
               <% for (ExcCnn of exercise.ExcCn.split("\n")) { %>
                 <p class="mb-0"><%=ExcCnn%></p>
               <% } %>
+              <p class="mt-3 mb-0"><b>동영상 따라하기</b></p>
+              <a href="<%=exercise.HowtoExcInfo%>"><%=exercise.HowtoExcInfo%></a>
+
             </div>
           </div>
         </section>
