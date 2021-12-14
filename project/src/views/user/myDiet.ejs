@@ -74,9 +74,9 @@
           <h2 class="title-label">내 식단</h2>
           
           <% myDietList.forEach((diet, idx) => { %>
-            <div class="diet-area" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickViewDetail(this)">
+            <div class="diet-area" idx="<%=idx%>">
               <button type="button" class="btn btn-danger" cntntsNo="<%=diet.cntntsNo%>" dietNm="<%=diet.dietNm%>" onclick="onClickRemoveButton(this)">삭제</button>
-              <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>">
+              <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickViewDetail(this)">
                 <div class="diet-image-name-area">
                   <img
                     width="200px"
