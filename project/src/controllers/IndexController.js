@@ -164,7 +164,7 @@ router.get("/recommendDiet", async (req, res) => {
   let intakedCalorie = 0; // 식단 랜덤으로 뽑으면서 열량 합 계산
   while (filteredDietList.length > 0) {
     let requireCalroie = maxCalorie - intakedCalorie;
-    filteredDietList = dietList.filter(diet => diet.clriInfo < requireCalroie - 200);
+    filteredDietList = dietList.filter(diet => diet.clriInfo < requireCalroie);
 
     if (filteredDietList.length > 0) {
       let diet = filteredDietList[indexService.getRandomInt(0, filteredDietList.length)];
