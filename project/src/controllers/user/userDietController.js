@@ -10,15 +10,21 @@ const User = require("../../models/User");
 
 */
 
-  //내 식단 보여줌
+  // 내 식단 보여줌
   router.get("/myDiet", async (req, res) => {
-
-    
+    let message = "";
     let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴. (현재 로그인한 사용자의 정보는 req.user 로 가져올 수 있음.)
     let myDietList = await Diet.find({ cntntsNo: { $in: user.myDiet }}); // 사용자의 내 식단에 포함된 식단들의 모든 정보를 가져옴.
 
+    // 보여줄 메시지 있으면 처리
+    if (req.session.message) {
+      message = req.session.message;
+      req.session.message = null;
+    }
+
     res.render("user/myDiet", {
-      myDietList
+      myDietList,
+      message
     });
 });
 
@@ -32,21 +38,19 @@ router.post("/myDiet/remover/:cntntsNo", async (req, res) => {
     let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴.
     
     // User 스키마의 myDiet 필드에 지우려는 식단코드인 myDiet 값이 존재한다면 배열에서 제거.
-    // 실제로 동작시켜보지는 않아서 나중에 테스트 해봐야 할듯 합니다!!
-    let index = user.myDiet.indexOf(myDiet);  //myDiet 값이 읽히지 않는다고 확인됩니다
+    let index = user.myDiet.indexOf(cntntsNo);  //myDiet 값이 읽히지 않는다고 확인됩니다
     if (index !== -1) {
       user.myDiet.splice(index, 1);
     }
     
     // 변경된 내용 DB에 적용 (여기서 변경된건 User 스키마 속의 myDiet 값)
     await user.save();
-
   } catch (err) {
     console.log(err);
   }
 
   req.session.message = "식단 삭제 완료!";
-  res.redirect("/user/myDiet");
+  res.redirect("/myDiet");
 });
 
 //내 식단 전체삭제(초기화)
@@ -64,7 +68,7 @@ router.post("/myDiet/remover", async (req, res) => {
   }
 
   req.session.message = "내 식단 전체삭제 완료!";
-  res.redirect("/user/myDiet");
+  res.redirect("/myDiet");
 });
 
 

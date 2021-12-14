@@ -35,7 +35,7 @@
         border-radius: 10px;
         cursor: pointer;
       }
-      .main .content .exercise-area.active {
+      /* .main .content .exercise-area.active {
         background: black;
         color: white;
       }
@@ -53,6 +53,14 @@
       .exercise-area .exercise-image-name-area {
         width: 100%;
         display: flex;
+      } */
+      .exercise-content-list {
+        padding-left: 100px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .exercise-content {
+        flex-basis: 33%;
       }
       .exercise-image-name-area img {
         align-self: center;
@@ -70,27 +78,27 @@
 
         <article class="inner-content">
           <h2 class="title-label">내 운동</h2>
-          
-         
-            <!-- 보여줄 운동이 있는 경우에만 -->
-        <% if (myExerciseList.length > 0) { %>
-            <div class="exercise-content-list">
-  
-              <% myExerciseList.forEach((ExcntntsNo) => { %>
-                <article class="exercise-content">
-                  <img
-                    width="200px"
-                    height="200px"
-                    src="/image/exercise/normal/<%=exercise.rtnStreFileNm%>"
-                    alt="운동"
-                    ExcntntsNo="<%=exercise.ExcntntsNo%>"
-                    onerror="this.src='/image/no_image_available.jpg';"
-                    style="cursor: pointer; border: gray 2px solid; border-radius: 10px;">
-                  <p><%=exercise.ExcNm%></p>
-                </article>
-              <% } ) %>
-            </div>
-          <% } %>
+
+          <!-- 보여줄 운동이 있는 경우에만 -->
+          <% if (myExerciseList.length > 0) { %>
+              <div class="exercise-content-list">
+
+                <% myExerciseList.forEach((exercise) => { %>
+                  <article class="exercise-content">
+                    <img
+                      width="200px"
+                      height="200px"
+                      src="/image/exercise/normal/<%=exercise.rtnStreFileNm%>"
+                      alt="운동"
+                      ExcntntsNo="<%=exercise.ExcntntsNo%>"
+                      onerror="this.src='/image/no_image_available.jpg';"
+                      style="cursor: pointer; border: gray 2px solid; border-radius: 10px;">
+                    <p><%=exercise.ExcNm%></p>
+                  </article>
+                <% } ) %>
+                
+              </div>
+            <% } %>
         </article>
 
         <div class="mt-4 w-50 alert alert-primary" role="alert" style="display: none">

@@ -68,37 +68,35 @@
 
       <section class="content">
 
+        <div class="mt-4 w-50 alert alert-primary" role="alert" style="display: none"><%=message%></div>
+
         <article class="inner-content">
           <h2 class="title-label">내 식단</h2>
           
-          <% myDietList.forEach((cntntsNo, idx) => { %>
+          <% myDietList.forEach((diet, idx) => { %>
             <div class="diet-area" idx="<%=idx%>">
-                <button type="button" class="btn btn-danger" onclick="onClickRemoveButton(this)">삭제</button>
-              <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=myDietList.cntntsNo%>">
+              <button type="button" class="btn btn-danger" cntntsNo="<%=diet.cntntsNo%>" dietNm="<%=diet.dietNm%>" onclick="onClickRemoveButton(this)">삭제</button>
+              <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>">
                 <div class="diet-image-name-area">
                   <img
                     width="200px"
                     height="200px"
-                    src="/image/diet/normal/<%=myDietList.rtnStreFileNm%>"
+                    src="/image/diet/normal/<%=diet.rtnStreFileNm%>"
                     alt="음식"
                     onerror="this.src='/image/no_image_available.jpg';">
                   <div class="d-flex flex-column ms-3">
-                    <p style="font-size: 20px;"><b><%=myDietList.dietNm%></b></p>
-                    <p><%=myDietList.dietCn%></p>
+                    <p style="font-size: 20px;"><b><%=diet.dietNm%></b></p>
+                    <p><%=diet.dietCn%></p>
                   </div>
                 </div>
                 <div class="diet-nutrition-area">
-                  <p style="margin-top: 10px; color: grey;"><%=myDietList.dietNtrsmallInfo%></p>
+                  <p style="margin-top: 10px; color: grey;"><%=diet.dietNtrsmallInfo%></p>
                 </div>
               </div>
             </div>
           <% }) %>
 
         </article>
-
-        <div class="mt-4 w-50 alert alert-primary" role="alert" style="display: none">
-          메시지 보여줄 공간
-        </div>
         
         <div class="mt-4 mb-4 w-25 form-floating d-flex">
           <button class="w-50 me-3 btn btn-lg btn-light" type="button" style="border: gray 2px solid" onclick="onClickResetButton()">내 식단 초기화</button>
@@ -108,6 +106,44 @@
       </section>
 
     </main>
+
+    <!-- 삭제 모달 -->
+    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">식단 삭제</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            식단 을(를) 정말로 삭제하시겠습니까?
+          </div>
+          <form action="#" method="post" class="modal-footer">
+            <button type="submit" class="btn btn-danger">예</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 초기화 모달 -->
+    <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">식단 초기화</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            식단을 정말로 모두 초기화하시겠습니까?
+          </div>
+          <form action="/myDiet/remover" method="post" class="modal-footer">
+            <button type="submit" class="btn btn-danger">예</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+          </form>
+        </div>
+      </div>
+    </div>
     
     <script src="/plugin/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"></script> <!-- 부트스트랩 js파일-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- ajax 요청을 위한 axios -->
@@ -116,36 +152,39 @@
 </html>
 
 <script>
-  // 메시지를 alert 요소에 보여줌
-  function showAlertMessage(message) {
-    let alertEl = document.querySelector(".alert");
-    alertEl.innerText = message;
-    alertEl.style.display = "block";
-  }
-
   // 각 식단별 삭제 버튼 눌렀을때
-  async function onClickRemoveButton() {
-    console.log("onClickRemoveButton");
-    let cntntsNo = document.querySelector(".cntntsNo").innerText;
+  async function onClickRemoveButton(e) {
+    let dietNm = e.getAttribute("dietNm");
+    let cntntsNo = e.getAttribute("cntntsNo");
 
-    try {
-      const res = await axios.post("/user/myDiet/remover/:cntntsNo", {
-        cntntsNo,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    let removeModalEl = document.querySelector("#removeModal");
+    removeModalEl.querySelector(".modal-body").innerText = `${dietNm} 을(를) 정말로 삭제하시겠습니까?`;
+    removeModalEl.querySelector("form").setAttribute("action", `/myDiet/remover/${cntntsNo}`);
+    
+    // 모달 창 띄워줌
+    let removeModal = new bootstrap.Modal(removeModalEl, {keyboard: true});
+    removeModal.show();
   }
 
   // 내 식단 초기화 버튼 클릭시
   async function onClickResetButton() {
-    console.log("onClickResetButton");
+    let removeModalEl = document.querySelector("#resetModal");
 
-    try {
-      const res = await axios.post("/user/myDiet/remover", {
-      });
-    } catch (err) {
-      console.log(err);
+    // 모달 창 띄워줌
+    let removeModal = new bootstrap.Modal(removeModalEl, {keyboard: true});
+    removeModal.show();
+  }
+
+  // 페이지 로드 시
+  window.addEventListener("load", onLoad, true);
+  function onLoad() {
+    
+    // 메시지가 있다면 보여줌
+    let messageEl = document.querySelector(".alert");
+    if (messageEl.innerText !== "") {
+      console.log(messageEl.innerText.length);
+      messageEl.style.display = "block";
     }
+    
   }
 </script>

@@ -12,13 +12,19 @@ const User = require("../../models/User");
 
   //내 운동 보여줌
   router.get("/myExercise", async (req, res) => {
-    
+    let message = "";
     let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴. (현재 로그인한 사용자의 정보는 req.user 로 가져올 수 있음.)
     let myExerciseList = await Exercise.find({ ExcntntsNo: { $in: user.myExercise }}); // 사용자의 내 식단에 포함된 식단들의 모든 정보를 가져옴.
     
+    // 보여줄 메시지 있으면 처리
+    if (req.session.message) {
+      message = req.session.message;
+      req.session.message = null;
+    }
 
   res.render("user/myExercise", {
-    myExerciseList
+    myExerciseList,
+    message
   });
 });
 
@@ -32,7 +38,7 @@ router.post("/myExercise/remover/:ExcntntsNo", async (req, res) => {
     
     // User 스키마의 myExercise 필드에 지우려는 운동코드인 myExercise 값이 존재한다면 배열에서 제거.
     // 실제로 동작시켜보지는 않아서 나중에 테스트 해봐야 할듯 합니다!!
-    let index = user.myExercise.indexOf(myDiet);
+    let index = user.myExercise.indexOf(ExcntntsNo);
     if (index !== -1) {
       user.myExercise.splice(index, 1);
     }
