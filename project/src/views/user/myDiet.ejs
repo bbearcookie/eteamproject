@@ -74,7 +74,7 @@
           <h2 class="title-label">내 식단</h2>
           
           <% myDietList.forEach((diet, idx) => { %>
-            <div class="diet-area" idx="<%=idx%>">
+            <div class="diet-area" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>" onclick="onClickViewDetail(this)">
               <button type="button" class="btn btn-danger" cntntsNo="<%=diet.cntntsNo%>" dietNm="<%=diet.dietNm%>" onclick="onClickRemoveButton(this)">삭제</button>
               <div class="diet-content" idx="<%=idx%>" cntntsNo="<%=diet.cntntsNo%>">
                 <div class="diet-image-name-area">
@@ -152,6 +152,15 @@
 </html>
 
 <script>
+  // 음식 상세 조회 클릭시
+  async function onClickViewDetail(e) {
+    let cntntsNo = e.getAttribute("cntntsNo");
+
+    console.log(cntntsNo);
+
+    window.location.href = "/myDiet/" + cntntsNo;
+  }
+  
   // 각 식단별 삭제 버튼 눌렀을때
   async function onClickRemoveButton(e) {
     let dietNm = e.getAttribute("dietNm");

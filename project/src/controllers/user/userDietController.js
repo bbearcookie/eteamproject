@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Diet = require("../../models/Diet");
+const Food = require("../../models/Food");
 const User = require("../../models/User");
 
 
@@ -10,22 +11,35 @@ const User = require("../../models/User");
 
 */
 
-  // 내 식단 보여줌
-  router.get("/myDiet", async (req, res) => {
-    let message = "";
-    let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴. (현재 로그인한 사용자의 정보는 req.user 로 가져올 수 있음.)
-    let myDietList = await Diet.find({ cntntsNo: { $in: user.myDiet }}); // 사용자의 내 식단에 포함된 식단들의 모든 정보를 가져옴.
+// 내 식단 목록 보여줌
+router.get("/myDiet", async (req, res) => {
+  let message = "";
+  let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴. (현재 로그인한 사용자의 정보는 req.user 로 가져올 수 있음.)
+  let myDietList = await Diet.find({ cntntsNo: { $in: user.myDiet }}); // 사용자의 내 식단에 포함된 식단들의 모든 정보를 가져옴.
 
-    // 보여줄 메시지 있으면 처리
-    if (req.session.message) {
-      message = req.session.message;
-      req.session.message = null;
-    }
+  // 보여줄 메시지 있으면 처리
+  if (req.session.message) {
+    message = req.session.message;
+    req.session.message = null;
+  }
 
-    res.render("user/myDiet", {
-      myDietList,
-      message
-    });
+  res.render("user/myDiet", {
+    myDietList,
+    message
+  });
+});
+
+// 내 식단 상세와 하위 음식 상세 보여줌
+router.get("/myDiet/:cntntsNo", async (req, res) => {
+  let { cntntsNo } = req.params;
+
+  let diet = await Diet.findOne({cntntsNo});
+  let foodList = await Food.find({cntntsNo});
+
+  res.render("user/myDietDetail", {
+    diet,
+    foodList
+  });
 });
 
 // 내 식단에서 특정 식단 삭제 처리
@@ -38,7 +52,7 @@ router.post("/myDiet/remover/:cntntsNo", async (req, res) => {
     let user = await User.findOne({username: req.user.username}); // 사용자의 정보를 가져옴.
     
     // User 스키마의 myDiet 필드에 지우려는 식단코드인 myDiet 값이 존재한다면 배열에서 제거.
-    let index = user.myDiet.indexOf(cntntsNo);  //myDiet 값이 읽히지 않는다고 확인됩니다
+    let index = user.myDiet.indexOf(cntntsNo);
     if (index !== -1) {
       user.myDiet.splice(index, 1);
     }
